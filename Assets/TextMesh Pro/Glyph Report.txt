@@ -1,0 +1,12 @@
+Font: Luckiest Guy  Style: Regular
+Point Size: 357   SP/PD Ratio: 4.5%
+
+Characters included: 70/70
+Missing characters: 0
+Excluded characters: 0
+
+Characters missing from font file:
+----------------------------------------
+
+Characters excluded from packing:
+----------------------------------------
