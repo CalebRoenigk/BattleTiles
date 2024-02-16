@@ -6,7 +6,7 @@ using Cinemachine;
 using UnityEngine;
 using DG.Tweening;
 
-public class GameManager : MonoBehaviour
+public class GameManagerOld : MonoBehaviour
 {
     // public static GameManager Instance;
     //

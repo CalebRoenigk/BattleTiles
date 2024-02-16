@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Tile
 {
+    public Player Owner;
     public TileVisual TileVisual;
     public List<Interface> Interfaces = new List<Interface>();
 
@@ -20,6 +21,11 @@ public class Tile
         }
 
         TileVisual = tileVisual;
+    }
+
+    public void SetOwner(Player player)
+    {
+        Owner = player;
     }
 
     public Vector2Int ValuesAsVector()

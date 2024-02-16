@@ -17,6 +17,7 @@ public class TileVisual : MonoBehaviour
     public void SetTile(Tile tile)
     {
         Tile = tile;
+        Tile.TileVisual = this;
         Vector2Int tileValues = Tile.ValuesAsVector();
         _material.SetVector("_Values", new Vector4(tileValues.x, tileValues.y, 0, 0));
     }

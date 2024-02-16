@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class Hand
 {
+    public Player Owner;
+    public PlayerHandVisual HandVisual;
+    
     public List<Tile> Tiles = new List<Tile>();
 
-    public Hand()
+    public Hand(Player owner)
     {
-        
+        Owner = owner;
     }
 
     public void AddTile(Tile tile)
     {
+        tile.SetOwner(Owner);
         Tiles.Add(tile);
     }
 
@@ -59,5 +63,12 @@ public class Hand
 
         // No tiles in hand, return null
         return null;
+    }
+
+    public void DrawTile()
+    {
+        Tile drawnTile = GameManager.Instance.DrawTile();
+        AddTile(drawnTile);
+        HandVisual.AddTile(drawnTile);
     }
 }

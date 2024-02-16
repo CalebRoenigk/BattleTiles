@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class Player
 {
+    public int Index;
     public Hand Hand;
     public int Health;
     public int Score;
 
-    public Player(int health = 100)
+    public Player(int index, int health = 100)
     {
-        Hand = new Hand();
+        Index = index;
+        Hand = new Hand(this);
         Health = health;
         Score = 0;
     }
