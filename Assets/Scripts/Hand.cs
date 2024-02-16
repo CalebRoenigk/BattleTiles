@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HandNEW
+public class Hand
 {
     public List<Tile> Tiles = new List<Tile>();
 
-    public HandNEW()
+    public Hand()
     {
         
     }

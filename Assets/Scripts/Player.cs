@@ -4,46 +4,24 @@ using UnityEngine;
 
 public class Player
 {
-    public int Index;
-    public PlayerHand PlayerHand;
-    // public List<Domino> Hand = new List<Domino>();
+    public Hand Hand;
     public int Health;
     public int Score;
 
-    public Player(int index, int health, PlayerHand playerHand)
+    public Player(int health = 100)
     {
-        this.Index = index;
-        this.Health = health;
-        this.PlayerHand = playerHand;
+        Hand = new Hand();
+        Health = health;
+        Score = 0;
     }
 
-    public Domino HighestInHand()
+    public Tile GetHighestInHand()
     {
-        if (PlayerHand.Hand.Count > 1)
-        {
-            Domino highest = PlayerHand.Hand[0];
-
-            for (int i = 1; i < PlayerHand.Hand.Count; i++)
-            {
-                if (highest.Values.IsGreater(PlayerHand.Hand[i].Values))
-                {
-                    highest = PlayerHand.Hand[i];
-                }
-            }
-
-            return highest;
-        }
-
-        if (PlayerHand.Hand.Count == 1)
-        {
-            return PlayerHand.Hand[0];
-        }
-
-        return null;
+        return Hand.GetHighestInHand();
     }
-
-    public void AddToHand(Domino domino, float delay = 0f)
+    
+    public void AddToHand(Tile tile, float delay = 0f)
     {
-        PlayerHand.AddDomino(domino, delay);
+        Hand.AddTile(tile);
     }
 }

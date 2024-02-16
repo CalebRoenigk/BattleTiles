@@ -5,75 +5,60 @@ using UnityEngine;
 
 public class Board
 {
-    public Domino Root;
-    public List<Domino> OpenDominos = new List<Domino>();
-    public List<DominoInterface> OpenInterfaces = new List<DominoInterface>();
-    public List<int> OpenValues = new List<int>();
+    public Tile Root;
+    public List<Tile> OpenTiles = new List<Tile>(); // Cache
+    public List<Interface> OpenInterfaces = new List<Interface>(); // Cache
+    public List<int> OpenValues = new List<int>(); // Cache
 
-    public void PlaceRoot(Domino domino)
+    public Board()
     {
-        Root = domino;
-        OpenDominos.Add(domino);
+        
     }
 
-    public void AddDomino(Domino domino, DominoSide placementSide, Domino connection, DominoSide connectionSide)
+    public void PlaceRoot(Tile tile)
     {
-        OpenDominos.Add(domino);
-        domino.ConnectSide(placementSide);
-        connection.ConnectSide(connectionSide);
-
-        if (!connection.HasOpenConnections())
-        {
-            OpenDominos.Remove(connection);
-        }
+        Root = tile;
+        OpenTiles.Add(tile);
+        UpdateCache();
     }
 
-    public void CacheOpenInterfaces()
+    // Updates the data cache of the board
+    public void UpdateCache()
     {
+        // Update the Open Tiles Cache
+        // Update the Open Interfaces Cache
+        OpenTiles.Clear();
         OpenInterfaces.Clear();
-        foreach (var openDomino in OpenDominos)
+        foreach (Tile tile in Root.GetConnectedTiles())
         {
-            OpenInterfaces.AddRange(openDomino.GetAllOpenInterfaces());
-        }
-
-        OpenValues = GetOpenValues();
-    }
-
-    public List<DominoInterface> GetMatchedOpenInterfaces(int matchValueA = -1, int matchValueB = -1)
-    {
-        List<DominoInterface> openInterfaces = new List<DominoInterface>();
-        if (matchValueA != -1 || matchValueB != -1)
-        {
-            List<DominoInterface> matchesCulled = new List<DominoInterface>();
-            List<DominoInterface> matchedA = OpenInterfaces.Where(i => i.Value == matchValueA).ToList();
-            if (matchValueA != -1)
+            List<Interface> openInterfaces = tile.GetOpenInterfaces();
+            if (openInterfaces.Count > 0)
             {
-                matchesCulled.AddRange(matchedA);
+                OpenTiles.Add(tile);
+                OpenInterfaces.AddRange(openInterfaces);
             }
-        
-            List<DominoInterface> matchedB = OpenInterfaces.Where(i => i.Value == matchValueB).ToList();
-            if (matchValueB != -1)
-            {
-                matchesCulled.AddRange(matchedB);
-            }
-
-            openInterfaces = matchesCulled.Distinct().ToList();
+            
         }
         
-        return openInterfaces;
-    }
-
-    public List<int> GetOpenValues()
-    {
-        List<int> openValues = new List<int>();
-        foreach (var openInterface in OpenInterfaces)
+        // Update the Open Values Cache
+        OpenValues.Clear();
+        foreach (Interface openInterface in OpenInterfaces)
         {
-            if (!openValues.Contains(openInterface.Value))
+            if (!OpenValues.Contains(openInterface.Value))
             {
-                openValues.Add(openInterface.Value);
+                OpenValues.Add(openInterface.Value); 
             }
         }
+    }
 
-        return openValues;
+    public List<Interface> GetMatchingOpenInterfaces(Interface inputInterface)
+    {
+        return OpenInterfaces.Where(i => i.Value == inputInterface.Value && i.IsOpen()).ToList();
+    }
+
+    public void AddTile(Interface placedInterface, Interface connectedInterface)
+    {
+        placedInterface.ConnectInterface(connectedInterface);
+        UpdateCache();
     }
 }
