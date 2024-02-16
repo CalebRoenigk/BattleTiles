@@ -5,11 +5,27 @@ using UnityEngine;
 
 public class BoardVisual : MonoBehaviour
 {
+    public static BoardVisual Instance;
+    
     [SerializeField] private Transform _boardParent;
     [SerializeField] private float _rotateBoard = 0f;
     [SerializeField] private float _rotationSpeedRamp = 0.05f;
     [SerializeField] private float _rotationSpeedMax = 10f;
     [SerializeField] private float _rotationSpeedSlow = 0.075f;
+    
+    private void Awake() 
+    { 
+        // If there is an instance, and it's not me, delete myself.
+    
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this); 
+        } 
+        else 
+        { 
+            Instance = this; 
+        } 
+    }
     
     private void Update()
     {

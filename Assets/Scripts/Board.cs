@@ -16,7 +16,7 @@ public class Board
 
     public Board()
     {
-        
+        BoardVisual = BoardVisual.Instance;
     }
 
     public void PlaceRoot(Tile tile)
