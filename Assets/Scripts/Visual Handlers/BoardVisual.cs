@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class BoardVisual : MonoBehaviour
@@ -88,8 +90,11 @@ public class BoardVisual : MonoBehaviour
             TileGhostVisual tileGhostVisual = Instantiate(_ghostPrefab, placementPosition, Quaternion.identity, _ghostParent).GetComponent<TileGhostVisual>();
             tileGhostVisual.SetTile(tile);
             
-            // TODO: Align the ghosts properly
-            
+            // Align the ghosts properly
+            Quaternion alignedRotation = Quaternion.LookRotation(matchedInterface.GetPosition() - placementPosition, Vector3.up);
+            tileGhostVisual.transform.rotation = alignedRotation;
+            tileGhostVisual.transform.Rotate(new Vector3(0f, 90f, 0f), Space.Self);
+
             // Add the ghost visual to the visuals list
             _ghostVisuals.Add(tileGhostVisual);
         }
