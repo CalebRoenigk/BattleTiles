@@ -16,7 +16,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private CinemachineTargetGroup _boardTargetGroup;
     
     [Header("Hand Settings")]
-    [SerializeField] private float _distFromCamera = 1.5f;
+    [SerializeField] private float _distFromCamera = 4f;
     [SerializeField] private float _bottomPad = 0.05f;
     [SerializeField] private float _objectViewSize = 0.3f;
     [SerializeField] private float _objectViewLength = 0.6f;
@@ -24,7 +24,7 @@ public class CameraManager : MonoBehaviour
     [Header("Runtime")]
     [SerializeField] private float _handWidth;
     [SerializeField] private float _handScaleFactor;
-    
+
     private void Awake() 
     { 
         // If there is an instance, and it's not me, delete myself.
@@ -42,6 +42,11 @@ public class CameraManager : MonoBehaviour
     {
         MainCamera = Camera.main;
         CalculateHandSettings();
+    }
+
+    private void OnDrawGizmos()
+    {
+        
     }
 
     public void AddTileToBoardTargets(Tile tile)
@@ -82,6 +87,7 @@ public class CameraManager : MonoBehaviour
         Vector3 bottomObjectWorldPoint = MainCamera.ViewportToWorldPoint(bottomObjectViewPoint);
         Vector3 topObjectWorldPoint = MainCamera.ViewportToWorldPoint(topObjectViewPoint);
         position = Vector3.Lerp(bottomObjectWorldPoint, topObjectWorldPoint, 0.5f);
+        position.x = 0f;
         
         rotation = Quaternion.LookRotation(MainCamera.transform.forward, MainCamera.transform.up);
     }

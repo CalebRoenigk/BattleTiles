@@ -71,4 +71,13 @@ public class Hand
         AddTile(drawnTile);
         HandVisual.AddTile(drawnTile);
     }
+
+    // Instantly hide all tiles in the hand
+    public void ForceHideHand()
+    {
+        foreach (Tile tile in Tiles)
+        {
+            tile.TileVisual.SetVisibility(0f, true);
+        }
+    }
 }

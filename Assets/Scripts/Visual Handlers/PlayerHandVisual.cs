@@ -36,13 +36,14 @@ public class PlayerHandVisual : MonoBehaviour
         CameraManager.Instance.GetHandSettings(out _handWidth, out _handScale);
         transform.localScale = Vector3.one * _handScale;
         gameObject.name = "Player " + Hand.Owner.Index;
-        HideHand();
     }
 
     public void AddTile(Tile tile)
     {
         TileVisual visualTile = Instantiate(_visualTilePrefab, transform.position, Quaternion.identity, transform).GetComponent<TileVisual>();
+        visualTile.transform.localPosition = new Vector3(0f, -2f, 0f);
         visualTile.SetTile(tile);
+        RefreshTileVisualList();
         UpdateHandVisuals();
     }
 
@@ -58,7 +59,8 @@ public class PlayerHandVisual : MonoBehaviour
     
     public List<Vector3> GetHandPositions()
     {
-        float unscaledWidth = _handWidth * (1 / transform.localScale.x);
+        CameraManager.Instance.GetHandSettings(out _handWidth, out _handScale);
+        float unscaledWidth = _handWidth;
         int tileCount = Hand.Tiles.Count;
         float stepSize = Mathf.Min(1f + _perferedSpacing, unscaledWidth / (tileCount - 1));
         bool mustStagger = stepSize < 1f + _perferedSpacing;
@@ -82,7 +84,7 @@ public class PlayerHandVisual : MonoBehaviour
                 point.z += _staggerDepth;
             }
             
-            handPositions.Add(transform.TransformPoint(point));
+            handPositions.Add(point);
         }
 
         return handPositions;
@@ -95,7 +97,10 @@ public class PlayerHandVisual : MonoBehaviour
         {
             TileVisual visualTile = Hand.Tiles[i].TileVisual;
             float delay = 0.05f * i;
-            visualTile.transform.DOMove(handPositions[i], 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
+            Vector3 localPos = visualTile.transform.localPosition;
+            localPos.z = handPositions[i].z;
+            visualTile.transform.localPosition = localPos;
+            visualTile.transform.DOMoveX(handPositions[i].x, 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
             visualTile.transform.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
         }
     }
@@ -103,12 +108,15 @@ public class PlayerHandVisual : MonoBehaviour
     public void PlaceTile(Tile tile, Vector3 position, Quaternion rotation)
     {
         Hand.RemoveTile(tile);
+        tile.TileVisual.SetVisibility(1f);
 
         tile.TileVisual.transform.DOKill();
         tile.TileVisual.transform.DOMove(position, 0.375f).SetEase(Ease.InOutQuad);
         tile.TileVisual.transform.DORotate(rotation.eulerAngles, 0.375f).SetEase(Ease.InOutQuad);
 
         GameManager.Instance.Board.UpdateTileParent(tile);
+        
+        RefreshTileVisualList();
     }
     
     // Shows the player hand in-front of the camera
@@ -133,7 +141,7 @@ public class PlayerHandVisual : MonoBehaviour
         // Move the transform of each tile down by _handScale * 2f
         foreach (var tileVisual in _tileVisuals)
         {
-            tileVisual.transform.DOLocalMoveY(-_handScale * 2f, 0.175f).SetEase(Ease.InQuad);
+            tileVisual.transform.DOLocalMoveY(-2f, 0.175f).SetEase(Ease.InQuad);
         }
         Sequence animateOffSequence = DOTween.Sequence();
         animateOffSequence.InsertCallback(0.175f, () => SetViewingState(false));
@@ -145,7 +153,7 @@ public class PlayerHandVisual : MonoBehaviour
     {
         foreach (var tileVisual in _tileVisuals)
         {
-            tileVisual.gameObject.SetActive(true);
+            tileVisual.SetVisibility(1f);
         }
     }
     
@@ -154,7 +162,7 @@ public class PlayerHandVisual : MonoBehaviour
     {
         foreach (var tileVisual in _tileVisuals)
         {
-            tileVisual.gameObject.SetActive(false);
+            tileVisual.SetVisibility(0f);
         }
     }
     
@@ -166,5 +174,16 @@ public class PlayerHandVisual : MonoBehaviour
         CameraManager.Instance.GetHandTransforms(out position, out rotation);
         transform.position = position;
         transform.rotation = rotation;
+    }
+    
+    // Updates the tile visual list
+    private void RefreshTileVisualList()
+    {
+        _tileVisuals.Clear();
+
+        foreach (Tile tile in Hand.Tiles)
+        {
+            _tileVisuals.Add(tile.TileVisual);
+        }
     }
 }

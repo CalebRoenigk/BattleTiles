@@ -412,7 +412,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718834305}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.3206651, y: 0.000000016297761, z: -0.0000000055174874, w: 0.94719267}
   m_LocalPosition: {x: 0, y: 35, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -478,6 +478,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1006361024}
+  - component: {fileID: 1006361025}
   m_Layer: 7
   m_Name: Board
   m_TagString: Untagged
@@ -497,9 +498,27 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1833517734}
   m_Father: {fileID: 1618028274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1006361025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006361023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9a597b869eca4aad81d1e7df49c2ce4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _boardParent: {fileID: 1006361024}
+  _rotateBoard: 0
+  _rotationSpeedRamp: 0.05
+  _rotationSpeedMax: 10
+  _rotationSpeedSlow: 0.075
 --- !u!1 &1618028272
 GameObject:
   m_ObjectHideFlags: 0
@@ -550,9 +569,41 @@ MonoBehaviour:
   _startingHealth: 100
   _startingHandSize: 5
   PlayerTurn: -1
+  TurnCount: -1
   _playerHandsParent: {fileID: 1976843714}
   _playerHandPrefab: {fileID: 4650268820450262421, guid: bf7bb99143ba64174b8a06bfa7899d1c,
     type: 3}
+--- !u!1 &1833517733
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1833517734}
+  m_Layer: 7
+  m_Name: Default Target - DO NOT REMOVE
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1833517734
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833517733}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006361024}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1976843713
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,7 +741,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 16
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -716,7 +767,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978165555}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.3206651, y: 0.000000016297761, z: -0.0000000055174874, w: 0.94719267}
   m_LocalPosition: {x: 0, y: 35, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -771,12 +822,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainCamera: {fileID: 0}
   _boardTargetGroup: {fileID: 1987275865}
-  _distFromCamera: 1.5
+  _distFromCamera: 4
   _bottomPad: 0.05
   _objectViewSize: 0.3
   _objectViewLength: 0.6
   _handWidth: 0
   _handScaleFactor: 0
+  _worldPos: {x: 0, y: 0, z: 0}
+  _handTransformPos: {x: 0, y: 0, z: 0}
+  _leftPos: {x: 0, y: 0, z: 0}
+  _rightPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1987275864
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,8 +863,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PositionMode: 0
   m_RotationMode: 0
-  m_UpdateMethod: 2
-  m_Targets: []
+  m_UpdateMethod: 0
+  m_Targets:
+  - target: {fileID: 1833517734}
+    weight: 1
+    radius: 0
 --- !u!4 &1987275866
 Transform:
   m_ObjectHideFlags: 0

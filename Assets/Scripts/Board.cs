@@ -31,8 +31,10 @@ public class Board
     // Updates the data cache of the board
     public void UpdateCache()
     {
+        // Debug.Log("Board Attempting to Update Cache!");
         if (_contentsChanged)
         {
+            // Debug.Log("Cache out of date, refreshing!");
             // Update the Open Tiles Cache
             // Update the Open Interfaces Cache
             OpenTiles.Clear();
@@ -58,6 +60,7 @@ public class Board
                 }
             }
 
+            // Debug.Log("Cache Refreshed!");
             _contentsChanged = false; 
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
 
     [Header("State")]
     public int PlayerTurn = -1;
+    public int TurnCount = -1;
     
     [Header("Players")]
     public Dictionary<int, Player> Players = new Dictionary<int, Player>();
@@ -44,6 +46,14 @@ public class GameManager : MonoBehaviour
         Setup();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            NextPlayer();
+        }
+    }
+
     private void Setup()
     {
         Boneyard = new Boneyard();
@@ -55,7 +65,6 @@ public class GameManager : MonoBehaviour
         
         PlayerTurn = PlaceHighestTileFromHands();
         
-        Debug.Log("Next Player!");
         NextPlayer();
     }
 
@@ -78,6 +87,11 @@ public class GameManager : MonoBehaviour
             {
                 Players[p].Hand.DrawTile();
             }
+        }
+
+        foreach (Player player in Players.Values)
+        {
+            player.Hand.ForceHideHand();
         }
     }
 
@@ -135,6 +149,7 @@ public class GameManager : MonoBehaviour
     
     private void NextPlayer()
     {
+        TurnCount++;
         PlayerTurn++;
         PlayerTurn %= PlayerCount;
         Board.UpdateCache();
@@ -156,6 +171,7 @@ public class GameManager : MonoBehaviour
     // Checks to do before the turn starts, things like checks for hands that cannot place a tile, etc.
     private void PreTurnChecks()
     {
+        // Debug.Log("Preturn Checks!");
         // TODO: FIX THIS
         // if (!Players[PlayerTurn].PlayerHand.CheckMatchingDominos())
         // {
