@@ -25,6 +25,9 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float _handWidth;
     [SerializeField] private float _handScaleFactor;
 
+    [Header("Gizmos")]
+    [SerializeField] private bool _drawGizmos = true;
+
     private void Awake() 
     { 
         // If there is an instance, and it's not me, delete myself.
@@ -46,7 +49,36 @@ public class CameraManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (_drawGizmos)
+        {
+            if (MainCamera != null)
+            {
+                Vector3 bottomObjectViewPoint = new Vector3(0.5f, 0f + _bottomPad, _distFromCamera);
+                Vector3 topObjectViewPoint = new Vector3(0.5f, 0f + _bottomPad + _objectViewSize, _distFromCamera);
+                Vector3 bottomObjectWorldPoint = MainCamera.ViewportToWorldPoint(bottomObjectViewPoint);
+                Vector3 topObjectWorldPoint = MainCamera.ViewportToWorldPoint(topObjectViewPoint);
+                Vector3 worldPos = Vector3.Lerp(bottomObjectWorldPoint, topObjectWorldPoint, 0.5f);
+                Vector3 middleObjectViewPoint = MainCamera.WorldToViewportPoint(worldPos);
         
+                Vector3 leftObjectLengthViewPoint = new Vector3(0.5f - (_objectViewLength / 2f), middleObjectViewPoint.y, _distFromCamera);
+                Vector3 rightObjectLengthViewPoint = new Vector3(0.5f + (_objectViewLength / 2f), middleObjectViewPoint.y, _distFromCamera);
+                Vector3 leftObjectLengthWorldPoint = MainCamera.ViewportToWorldPoint(leftObjectLengthViewPoint);
+                Vector3 rightObjectLengthWorldPoint = MainCamera.ViewportToWorldPoint(rightObjectLengthViewPoint);
+
+                List<Vector3> pointsToDraw = new List<Vector3>();
+                pointsToDraw.Add(worldPos);
+                pointsToDraw.Add(bottomObjectWorldPoint);
+                pointsToDraw.Add(topObjectWorldPoint);
+                pointsToDraw.Add(leftObjectLengthWorldPoint);
+                pointsToDraw.Add(rightObjectLengthWorldPoint);
+            
+                Gizmos.color = Color.cyan;
+                foreach (Vector3 pt in pointsToDraw)
+                {
+                    Gizmos.DrawSphere(pt, 0.01f);
+                }
+            }
+        }
     }
 
     public void AddTileToBoardTargets(Tile tile)
@@ -57,6 +89,7 @@ public class CameraManager : MonoBehaviour
     // Returns the width of a player's visual hand
     public void GetHandSettings(out float handWidth, out float handScale)
     {
+        CalculateHandSettings();
         handWidth = _handWidth;
         handScale = _handScaleFactor;
     }

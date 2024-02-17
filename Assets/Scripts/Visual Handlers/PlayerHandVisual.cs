@@ -94,6 +94,7 @@ public class PlayerHandVisual : MonoBehaviour
     public void UpdateHandVisuals()
     {
         List<Vector3> handPositions = GetHandPositions();
+        transform.localScale = Vector3.one * _handScale;
         for (int i = 0; i < Hand.Tiles.Count; i++)
         {
             TileVisual visualTile = Hand.Tiles[i].TileVisual;
