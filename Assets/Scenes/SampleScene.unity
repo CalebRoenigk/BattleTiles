@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 35, z: -50}
+  m_FollowOffset: {x: 0, y: 15, z: -20}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -214,7 +214,7 @@ MonoBehaviour:
   m_MaxDollyOut: 5000
   m_MinimumDistance: 1
   m_MaximumDistance: 5000
-  m_MinimumFOV: 16
+  m_MinimumFOV: 5
   m_MaximumFOV: 60
   m_MinimumOrthoSize: 1
   m_MaximumOrthoSize: 5000
@@ -386,7 +386,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 1987275866}
   m_Follow: {fileID: 1987275866}
   m_Lens:
-    FieldOfView: 60
+    FieldOfView: 4
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -412,8 +412,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718834305}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3206651, y: 0.000000016297761, z: -0.0000000055174874, w: 0.94719267}
-  m_LocalPosition: {x: 0, y: 35, z: -50}
+  m_LocalRotation: {x: 0.3224337, y: 0.000000016287423, z: -0.000000005547917, w: 0.94659203}
+  m_LocalPosition: {x: 0, y: 15, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -516,9 +516,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _boardParent: {fileID: 1006361024}
   _rotateBoard: 0
-  _rotationSpeedRamp: 0.05
-  _rotationSpeedMax: 10
-  _rotationSpeedSlow: 0.075
+  _rotationSpeedRamp: 0.5
+  _rotationSpeedMax: 15
+  _rotationSpeedSlow: 0.005
 --- !u!1 &1618028272
 GameObject:
   m_ObjectHideFlags: 0
@@ -741,7 +741,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 16
+  field of view: 5
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -767,8 +767,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978165555}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3206651, y: 0.000000016297761, z: -0.0000000055174874, w: 0.94719267}
-  m_LocalPosition: {x: 0, y: 35, z: -50}
+  m_LocalRotation: {x: 0.3224337, y: 0.000000016287423, z: -0.000000005547917, w: 0.94659203}
+  m_LocalPosition: {x: 0, y: 15, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -828,10 +828,6 @@ MonoBehaviour:
   _objectViewLength: 0.6
   _handWidth: 0
   _handScaleFactor: 0
-  _worldPos: {x: 0, y: 0, z: 0}
-  _handTransformPos: {x: 0, y: 0, z: 0}
-  _leftPos: {x: 0, y: 0, z: 0}
-  _rightPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1987275864
 GameObject:
   m_ObjectHideFlags: 0

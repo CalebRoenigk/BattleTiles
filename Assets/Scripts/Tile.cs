@@ -116,4 +116,9 @@ public class Tile
         Vector2Int values = ValuesAsVector();
         return values.x + values.y;
     }
+
+    public bool IsInHand()
+    {
+        return Owner.Hand.Tiles.Contains(this);
+    }
 }

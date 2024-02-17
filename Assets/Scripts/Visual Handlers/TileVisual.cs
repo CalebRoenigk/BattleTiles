@@ -15,6 +15,22 @@ public class TileVisual : MonoBehaviour
         _material = GetComponent<MeshRenderer>().material;
     }
 
+    private void OnMouseEnter()
+    {
+        if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable)
+        {
+            transform.DOLocalMoveY(0.5f, 0.15f).SetEase(Ease.OutCubic);
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable)
+        {
+            transform.DOLocalMoveY(0f, 0.15f).SetEase(Ease.OutCubic);
+        }
+    }
+
     public void SetTile(Tile tile)
     {
         Tile = tile;

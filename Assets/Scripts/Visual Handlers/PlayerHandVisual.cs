@@ -19,6 +19,7 @@ public class PlayerHandVisual : MonoBehaviour
     [SerializeField] private float _staggerDepth = 0.4f;
 
     [Header("State")]
+    public bool Interactable = false;
     [SerializeField] private bool _viewingState = false;
 
     private void Update()
@@ -113,6 +114,7 @@ public class PlayerHandVisual : MonoBehaviour
         tile.TileVisual.transform.DOKill();
         tile.TileVisual.transform.DOMove(position, 0.375f).SetEase(Ease.InOutQuad);
         tile.TileVisual.transform.DORotate(rotation.eulerAngles, 0.375f).SetEase(Ease.InOutQuad);
+        tile.TileVisual.transform.DOScale(1f, 0.375f).SetEase(Ease.InOutQuad);
 
         GameManager.Instance.Board.UpdateTileParent(tile);
         
@@ -133,11 +135,14 @@ public class PlayerHandVisual : MonoBehaviour
             tileVisual.transform.DOLocalMoveY(0f, 0.175f).SetEase(Ease.OutQuad).SetDelay(0.25f + (staggerDelay * i));
             i++;
         }
+        Sequence animateOnSequence = DOTween.Sequence();
+        animateOnSequence.InsertCallback(0.175f + (staggerDelay * _tileVisuals.Count), () => SetInteractableState(true));
     }
 
     // Hides the player hand in-front of the camera
     public void HideHand()
     {
+        SetInteractableState(false);
         // Move the transform of each tile down by _handScale * 2f
         foreach (var tileVisual in _tileVisuals)
         {
@@ -146,6 +151,7 @@ public class PlayerHandVisual : MonoBehaviour
         Sequence animateOffSequence = DOTween.Sequence();
         animateOffSequence.InsertCallback(0.175f, () => SetViewingState(false));
         animateOffSequence.InsertCallback(0.175f, DisableTiles);
+        
     }
 
     // Enables all tiles in the hand
@@ -185,5 +191,11 @@ public class PlayerHandVisual : MonoBehaviour
         {
             _tileVisuals.Add(tile.TileVisual);
         }
+    }
+    
+    // Sets the interaction state
+    private void SetInteractableState(bool state)
+    {
+        Interactable = state;
     }
 }
