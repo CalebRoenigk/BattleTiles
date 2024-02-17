@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1090650878697473395}
-  - component: {fileID: 8464072008550060057}
+  - component: {fileID: 4460763264404336904}
   m_Layer: 6
   m_Name: PlayerHand
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8464072008550060057
+--- !u!114 &4460763264404336904
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,13 +41,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4650268820450262421}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb51b1f0bd4b546e99d17b4b8650890a, type: 3}
+  m_Script: {fileID: 11500000, guid: 02f0befb652a64ab5a6d00fe23fcd9af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Hand: []
-  isClosed: 1
-  _openMaxLength: 8
-  _closeMaxLength: 5
-  _openMaxSpacing: 2.1
-  _closeMaxSpacing: 1
-  _handIndex: 0
+  _tileVisuals: []
+  _visualTilePrefab: {fileID: 2124036694141950686, guid: 0c7c90b13d2bf48609521fbd152dcf9f,
+    type: 3}
+  _perferedSpacing: 0.2
+  _handWidth: 0
+  _handScale: 0
+  _staggerDepth: 0.4
+  _viewingState: 0

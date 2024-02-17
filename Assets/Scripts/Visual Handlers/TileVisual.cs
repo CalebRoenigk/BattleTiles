@@ -20,5 +20,6 @@ public class TileVisual : MonoBehaviour
         Tile.TileVisual = this;
         Vector2Int tileValues = Tile.ValuesAsVector();
         _material.SetVector("_Values", new Vector4(tileValues.x, tileValues.y, 0, 0));
+        gameObject.name = Tile.ValuesAsString();
     }
 }

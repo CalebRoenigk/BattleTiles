@@ -50,11 +50,12 @@ public class GameManager : MonoBehaviour
         Board = new Board();
         
         CreatePlayers(PlayerCount);
-
+        
         DealTiles(_startingHandSize);
         
         PlayerTurn = PlaceHighestTileFromHands();
         
+        Debug.Log("Next Player!");
         NextPlayer();
     }
 
@@ -62,24 +63,13 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < playerCount; i++) 
         {
-            Vector3 rotation = Quaternion.LookRotation(GetPlayerHandPosition(i)*1.5f - GetPlayerHandPosition(i), Vector3.up).eulerAngles;
             Player player = new Player(i, _startingHealth);
-            PlayerHandVisual playerHandVisual = Instantiate(_playerHandPrefab, GetPlayerHandPosition(i), Quaternion.Euler(0f, rotation.y, 0f), _playerHandsParent).GetComponent<PlayerHandVisual>();
+            PlayerHandVisual playerHandVisual = Instantiate(_playerHandPrefab, Vector3.zero, Quaternion.identity, _playerHandsParent).GetComponent<PlayerHandVisual>();
             playerHandVisual.SetHand(player.Hand);
             Players.Add(i, player);
         }
     }
-    
-    private Vector3 GetPlayerHandPosition(int i)
-    {
-        float playerDegreeSeparation = Mathf.Deg2Rad * (360f / (float)PlayerCount);
-        float playerPositionOffset = 12f;
-        
-        Vector3 playerPosition = new Vector3(Mathf.Cos(playerDegreeSeparation * i) * playerPositionOffset, 0f, Mathf.Sin(playerDegreeSeparation * i) * playerPositionOffset);
-        
-        return playerPosition;
-    }
-    
+
     private void DealTiles(int handSize)
     {
         for (int i = 0; i < handSize; i++)
@@ -148,13 +138,19 @@ public class GameManager : MonoBehaviour
         PlayerTurn++;
         PlayerTurn %= PlayerCount;
         Board.UpdateCache();
-        CameraManager.Instance.NextTurn();
-        for (int i = 0; i < PlayerCount; i++)
-        {
-            Players[i].Hand.HandVisual.SetViewingState(i != PlayerTurn);
-        }
 
         PreTurnChecks();
+    }
+
+    private int LastPlayerIndex()
+    {
+        int lastPlayerIndex = PlayerTurn - 1;
+        if (lastPlayerIndex < 0)
+        {
+            lastPlayerIndex = PlayerCount - 1;
+        }
+
+        return lastPlayerIndex;
     }
 
     // Checks to do before the turn starts, things like checks for hands that cannot place a tile, etc.
@@ -174,5 +170,9 @@ public class GameManager : MonoBehaviour
         //     Players[PlayerTurn].AddToHand(domino);
         //     Invoke("NextPlayer", 2f);
         // }
+        
+        // At the end of preturn checks, trigger the start of the turn
+        Players[LastPlayerIndex()].EndTurn();
+        Players[PlayerTurn].StartTurn();
     }
 }

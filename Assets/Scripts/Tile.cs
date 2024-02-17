@@ -35,6 +35,13 @@ public class Tile
         return new Vector2Int(topValue, bottomValue);
     }
 
+    public string ValuesAsString()
+    {
+        int topValue = Interfaces.Find(i => i.Side == TileSide.Top).Value;
+        int bottomValue = Interfaces.Find(i => i.Side == TileSide.Bottom).Value;
+        return "[" + topValue + ":" + bottomValue + "]";
+    }
+
     public bool IsDouble()
     {
         return Interfaces.FindIndex(i => i.Side == TileSide.Left) != -1;

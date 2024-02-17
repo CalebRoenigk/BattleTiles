@@ -26,4 +26,16 @@ public class Player
     {
         Hand.AddTile(tile);
     }
+
+    public void StartTurn()
+    {
+        // Trigger turn start for the player hand visual
+        Hand.HandVisual.ShowHand();
+    }
+
+    public void EndTurn()
+    {
+        // Trigger turn end for the player hand visual
+        Hand.HandVisual.HideHand();
+    }
 }
