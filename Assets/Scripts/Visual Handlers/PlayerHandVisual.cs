@@ -20,6 +20,7 @@ public class PlayerHandVisual : MonoBehaviour
 
     [Header("State")]
     public bool Interactable = false;
+    public Tile SelectedTile = null;
     [SerializeField] private bool _viewingState = false;
 
     private void Update()
@@ -198,5 +199,29 @@ public class PlayerHandVisual : MonoBehaviour
     private void SetInteractableState(bool state)
     {
         Interactable = state;
+        if (!Interactable)
+        {
+            foreach (TileVisual tileVisual in _tileVisuals)
+            {
+                tileVisual.Selected = false;
+            }
+        }
+
+        UpdateSelection();
+    }
+    
+    // Updates the selection of the hand
+    public void UpdateSelection()
+    {
+        SelectedTile = null;
+        foreach (TileVisual tileVisual in _tileVisuals)
+        {
+            if (tileVisual.Selected)
+            {
+                SelectedTile = tileVisual.Tile;
+            }
+        }
+
+        GameManager.Instance.UpdateGhosts(SelectedTile);
     }
 }

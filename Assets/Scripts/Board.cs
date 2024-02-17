@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Board
@@ -82,5 +83,37 @@ public class Board
         tile.TileVisual.gameObject.layer = 7;
         CameraManager.Instance.AddTileToBoardTargets(tile);
         BoardVisual.AddTile(tile);
+    }
+
+    public void ClearGhosts()
+    {
+        BoardVisual.ClearGhosts();
+    }
+
+    public void DrawGhosts(Tile tile)
+    {
+        // Clear Ghosts First
+        BoardVisual.ClearGhosts(true);
+        
+        // Filter the open interfaces on the board to match with this one
+        List<Interface> topMatches = GetMatchingOpenInterfaces(tile.Interfaces.Find(i => i.Side == TileSide.Top));
+        List<Interface> bottomMatches = GetMatchingOpenInterfaces(tile.Interfaces.Find(i => i.Side == TileSide.Bottom));
+
+        if (tile.IsDouble())
+        {
+            bottomMatches.Clear();
+        }
+
+        if (topMatches.Count > 0 || bottomMatches.Count > 0)
+        {
+            // Cull matches to a distinct list
+            List<Interface> allMatches = new List<Interface>();
+            allMatches.AddRange(topMatches);
+            allMatches.AddRange(bottomMatches);
+
+            allMatches.Distinct();
+
+            BoardVisual.DrawGhosts(tile, allMatches);
+        }
     }
 }

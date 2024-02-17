@@ -6,8 +6,11 @@ using UnityEngine;
 public class BoardVisual : MonoBehaviour
 {
     public static BoardVisual Instance;
-    
+
     [SerializeField] private Transform _boardParent;
+    [SerializeField] private Transform _ghostParent;
+    [SerializeField] private GameObject _ghostPrefab;
+    [SerializeField] private List<TileGhostVisual> _ghostVisuals = new List<TileGhostVisual>();
     [SerializeField] private float _rotateBoard = 0f;
     [SerializeField] private float _rotationSpeedRamp = 0.05f;
     [SerializeField] private float _rotationSpeedMax = 10f;
@@ -60,5 +63,35 @@ public class BoardVisual : MonoBehaviour
     public void AddTile(Tile tile)
     {
         tile.TileVisual.transform.parent = _boardParent;
+    }
+
+    public void ClearGhosts(bool forceInstantClear = false)
+    {
+        foreach (TileGhostVisual ghostVisual in _ghostVisuals)
+        {
+            if (!forceInstantClear)
+            {
+                ghostVisual.SetVisibility(0f);
+            }
+            Destroy(ghostVisual.gameObject, forceInstantClear ? 0f : 0.2f);
+        }
+        
+        _ghostVisuals.Clear();
+    }
+
+    public void DrawGhosts(Tile tile, List<Interface> matchedInterfaces)
+    {
+        // Spawn ghosts at their matched interfaces
+        foreach (Interface matchedInterface in matchedInterfaces)
+        {
+            Vector3 placementPosition = matchedInterface.GetPlacementPosition();
+            TileGhostVisual tileGhostVisual = Instantiate(_ghostPrefab, placementPosition, Quaternion.identity, _ghostParent).GetComponent<TileGhostVisual>();
+            tileGhostVisual.SetTile(tile);
+            
+            // TODO: Align the ghosts properly
+            
+            // Add the ghost visual to the visuals list
+            _ghostVisuals.Add(tileGhostVisual);
+        }
     }
 }

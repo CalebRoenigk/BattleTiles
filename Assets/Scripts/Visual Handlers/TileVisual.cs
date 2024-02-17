@@ -8,6 +8,7 @@ public class TileVisual : MonoBehaviour
 {
     public Tile Tile;
 
+    public bool Selected = false;
     [SerializeField] private Material _material;
 
     private void Awake()
@@ -20,6 +21,8 @@ public class TileVisual : MonoBehaviour
         if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable)
         {
             transform.DOLocalMoveY(0.5f, 0.15f).SetEase(Ease.OutCubic);
+            Selected = true;
+            Tile.Owner.Hand.HandVisual.UpdateSelection();
         }
     }
 
@@ -28,6 +31,8 @@ public class TileVisual : MonoBehaviour
         if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable)
         {
             transform.DOLocalMoveY(0f, 0.15f).SetEase(Ease.OutCubic);
+            Selected = false;
+            Tile.Owner.Hand.HandVisual.UpdateSelection();
         }
     }
 

@@ -191,4 +191,17 @@ public class GameManager : MonoBehaviour
         Players[LastPlayerIndex()].EndTurn();
         Players[PlayerTurn].StartTurn();
     }
+    
+    // Updates the ghosts on the board
+    public void UpdateGhosts(Tile matchingTile)
+    {
+        if (matchingTile == null)
+        {
+            Board.ClearGhosts();
+        }
+        else
+        {
+            Board.DrawGhosts(matchingTile);
+        }
+    }
 }

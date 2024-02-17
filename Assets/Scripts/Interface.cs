@@ -58,6 +58,6 @@ public class Interface
 
     public Vector3 GetPlacementPosition()
     {
-        return Parent.TileVisual.transform.TransformPoint(Center*3f);
+        return Parent.TileVisual.transform.TransformPoint(Center*2f);
     }
 }
