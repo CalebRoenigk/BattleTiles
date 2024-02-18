@@ -38,4 +38,9 @@ public class Player
         // Trigger turn end for the player hand visual
         Hand.HandVisual.HideHand();
     }
+
+    public void DoDamage(int damage)
+    {
+        Health -= damage;
+    }
 }

@@ -194,4 +194,22 @@ public class Board
             }
         }
     }
+    
+    // Returns the grouped collections of open interfaces
+    public Dictionary<int, List<Interface>> GetGroupedOpenInterfaces()
+    {
+        Dictionary<int, List<Interface>> groupedOpenInterfaces = new Dictionary<int, List<Interface>>();
+
+        foreach (Interface openInterface in OpenInterfaces)
+        {
+            if (!groupedOpenInterfaces.ContainsKey(openInterface.Value))
+            {
+                groupedOpenInterfaces.Add(openInterface.Value, new List<Interface>());
+            }
+
+            groupedOpenInterfaces[openInterface.Value].Add(openInterface);
+        }
+
+        return groupedOpenInterfaces;
+    }
 }

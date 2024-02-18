@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +13,10 @@ public class GameManager : MonoBehaviour
     public int PlayerCount = 4;
     [SerializeField] private int _startingHealth = 100;
     [SerializeField] private int _startingHandSize = 5;
+
+    [Header("Scoring and Health")]
+    [SerializeField] private int _healthCardValue = 5;
+    [SerializeField] private int _damageCardValue = 8;
 
     [Header("State")]
     public int PlayerTurn = -1;
@@ -186,6 +191,8 @@ public class GameManager : MonoBehaviour
     // Checks to do before the turn starts, things like checks for hands that cannot place a tile, etc.
     private void PreTurnChecks()
     {
+        // Update the Temp UI
+        TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
         // Debug.Log("Preturn Checks!");
         // TODO: FIX THIS
         // if (!Players[PlayerTurn].PlayerHand.CheckMatchingDominos())
@@ -209,12 +216,51 @@ public class GameManager : MonoBehaviour
     private void PostTurnChecks()
     {
         // TODO: Do any post turn checks
+        // Update the board cache
         Board.UpdateSelection(null);
         Board.UpdateCache();
+        
+        // Collect all open interfaces to tally up the score
+        Dictionary<int, List<Interface>> groupedOpenInterfaces = Board.GetGroupedOpenInterfaces();
+        
+        // Filter the dictonary so that only interfaces with 3 or more of a value remain
+        groupedOpenInterfaces.Where(kvp => kvp.Value.Count >= 3).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        
+        // For each remaining group tally up the total damage for that group
+        List<DamageTally> damageTallies = new List<DamageTally>();
+        foreach (var groupedInterfaces in groupedOpenInterfaces)
+        {
+            int interfaceValue = groupedInterfaces.Key;
+            int sourcePlayer = PlayerTurn;
+            List<Interface> sources = groupedInterfaces.Value;
+            int damage;
+            List<int> effected = new List<int>();
+
+            if (interfaceValue == 5)
+            {
+                // Heal the player
+                effected.Add(PlayerTurn);
+                damage = sources.Count * -_healthCardValue;
+            }
+            else
+            {
+                // Do damage to all other players
+                effected.AddRange(GetAllPlayerIndices(true));
+                damage = sources.Count * _damageCardValue;
+            }
+            
+            damageTallies.Add(new DamageTally(damage, sourcePlayer, effected, sources));
+        }
+        
+        // Apply that damage to all effected players (outlined by the damage values class)
+        ApplyDamages(damageTallies);
+        
+        // Update the player UI
+        TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
 
         // End the turn of the current player
         Players[PlayerTurn].EndTurn();
-        
+
         // Start the next turn
         NextPlayer();
     }
@@ -251,5 +297,30 @@ public class GameManager : MonoBehaviour
         playerTurns.Add(NextPlayerIndex());
 
         return playerTurns;
+    }
+
+    private List<int> GetAllPlayerIndices(bool excludeCurrentPlayer = false)
+    {
+        List<int> playerIndices = new List<int>();
+        foreach (var playerDictEntry in Players)
+        {
+            if (!(excludeCurrentPlayer && playerDictEntry.Key == PlayerTurn))
+            {
+                playerIndices.Add(playerDictEntry.Key);
+            }
+        }
+
+        return playerIndices;
+    }
+
+    private void ApplyDamages(List<DamageTally> damageTallies)
+    {
+        foreach (DamageTally damageTally in damageTallies)
+        {
+            foreach (int effectedPlayerIndex in damageTally.PlayersEffected)
+            {
+                Players[effectedPlayerIndex].DoDamage(damageTally.Damage);
+            }
+        }
     }
 }
