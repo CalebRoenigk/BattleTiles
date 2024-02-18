@@ -1,41 +1,45 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Boneyard
 {
-    public Queue<ValuePair> Pile = new Queue<ValuePair>();
+    public Queue<Tile> Pile = new Queue<Tile>();
     private int _maxValue = 9; // The max count of a single value in the value pairs
 
-    // Fills the Boneyard with a new set of randomly ordered pairs
+    public Boneyard()
+    {
+        
+    }
+    
+    // Fills the Boneyard with a new set of randomly ordered Tiles
     private void FillPile()
     {
-        List<ValuePair> valuePairs = new List<ValuePair>();
+        List<Tile> tiles = new List<Tile>();
         
         // Generate and print all possible dominos
         for (int i = 0; i <= _maxValue; i++)
         {
             for (int j = i; j <= _maxValue; j++)
             {
-                ValuePair pair = new ValuePair(i, j);
-                if (valuePairs.FindIndex(p => p.IsEqual(pair))== -1)
+                Tile tile = new Tile(i,j);
+                if (tiles.FindIndex(t => t.IsEqual(tile))== -1)
                 {
-                    valuePairs.Add(pair);
+                    tiles.Add(tile);
                 }
             }
         }
         
         // Shuffle the list randomly, seeded
         System.Random rng = new System.Random(Mathf.RoundToInt(UnityEngine.Random.Range(0, 10000000)));
-        Shuffle(valuePairs, rng);
+        Shuffle(tiles, rng);
         
         // Add each item in the list to the queue
-        valuePairs.ForEach(i => Pile.Enqueue(i));
+        tiles.ForEach(t => Pile.Enqueue(t));
     }
 
-    // Returns a value pair from the pile
-    public ValuePair DrawDomino()
+    // Returns a tile from the pile
+    public Tile DrawTile()
     {
         if (Pile.Count <= 0)
         {
