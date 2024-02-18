@@ -22,14 +22,6 @@ public class PlayerHandVisual : MonoBehaviour
     public bool Interactable = false;
     [SerializeField] private bool _viewingState = false;
 
-    private void Update()
-    {
-        if (_viewingState)
-        {
-            SetTransformFromView();
-        }
-    }
-
     public void SetHand(Hand hand)
     {
         Hand = hand;
@@ -44,6 +36,11 @@ public class PlayerHandVisual : MonoBehaviour
         TileVisual visualTile = Instantiate(_visualTilePrefab, transform.position, Quaternion.identity, transform).GetComponent<TileVisual>();
         visualTile.transform.localPosition = new Vector3(0f, -2f, 0f);
         visualTile.SetTile(tile);
+        if (!_viewingState)
+        {
+            // The tile was added to a hand who is currently not viewed. Force the tile to be invisible
+            visualTile.SetVisibility(0f, true);
+        }
         RefreshTileVisualList();
         UpdateHandVisuals();
     }
@@ -83,6 +80,10 @@ public class PlayerHandVisual : MonoBehaviour
             if (mustStagger && i % 2 != 0)
             {
                 point.z += _staggerDepth;
+            }
+            else
+            {
+                point.z = 0;
             }
             
             handPositions.Add(point);
@@ -137,7 +138,6 @@ public class PlayerHandVisual : MonoBehaviour
         Sequence animateOffSequence = DOTween.Sequence();
         animateOffSequence.InsertCallback(0.175f, () => SetViewingState(false));
         animateOffSequence.InsertCallback(0.175f, DisableTiles);
-        
     }
 
     // Enables all tiles in the hand
@@ -157,17 +157,7 @@ public class PlayerHandVisual : MonoBehaviour
             tileVisual.SetVisibility(0f);
         }
     }
-    
-    // Sets the transform of the rotation and position given the camera view
-    private void SetTransformFromView()
-    {
-        Vector3 position;
-        Quaternion rotation;
-        CameraManager.Instance.GetHandTransforms(out position, out rotation);
-        transform.position = position;
-        transform.rotation = rotation;
-    }
-    
+
     // Updates the tile visual list
     public void RefreshTileVisualList()
     {
