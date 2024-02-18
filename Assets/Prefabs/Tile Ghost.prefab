@@ -97,3 +97,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _material: {fileID: 0}
+  _ghostSelectedColor:
+    serializedVersion: 2
+    rgba: 4294946089

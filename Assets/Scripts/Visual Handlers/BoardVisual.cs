@@ -65,6 +65,7 @@ public class BoardVisual : MonoBehaviour
     public void AddTile(Tile tile)
     {
         tile.TileVisual.transform.parent = _boardParent;
+        tile.TileVisual.gameObject.tag = "Board Tile";
     }
 
     public void ClearGhosts(bool forceInstantClear = false)
@@ -84,11 +85,12 @@ public class BoardVisual : MonoBehaviour
     public void DrawGhosts(Tile tile, List<Interface> matchedInterfaces)
     {
         // Spawn ghosts at their matched interfaces
+        bool firstMatch = true;
         foreach (Interface matchedInterface in matchedInterfaces)
         {
             Vector3 placementPosition = matchedInterface.GetPlacementPosition();
             TileGhostVisual tileGhostVisual = Instantiate(_ghostPrefab, placementPosition, Quaternion.identity, _ghostParent).GetComponent<TileGhostVisual>();
-            tileGhostVisual.SetTile(tile);
+            tileGhostVisual.SetTile(tile, firstMatch);
             
             // Align the ghosts properly
             Quaternion alignedRotation = Quaternion.LookRotation(matchedInterface.GetPosition() - placementPosition, Vector3.up);
@@ -97,6 +99,11 @@ public class BoardVisual : MonoBehaviour
 
             // Add the ghost visual to the visuals list
             _ghostVisuals.Add(tileGhostVisual);
+
+            if (firstMatch)
+            {
+                firstMatch = false;
+            }
         }
     }
 }

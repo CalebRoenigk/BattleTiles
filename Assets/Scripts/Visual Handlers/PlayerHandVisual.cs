@@ -112,6 +112,7 @@ public class PlayerHandVisual : MonoBehaviour
     {
         Hand.RemoveTile(tile);
         tile.TileVisual.SetVisibility(1f);
+        tile.TileVisual.ConfigurePlacedTile();
 
         tile.TileVisual.transform.DOKill();
         tile.TileVisual.transform.DOMove(position, 0.375f).SetEase(Ease.InOutQuad);

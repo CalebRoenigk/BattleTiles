@@ -153,6 +153,7 @@ public class GameManager : MonoBehaviour
         PlayerTurn++;
         PlayerTurn %= PlayerCount;
         Board.UpdateCache();
+        Board.ClearActiveMatches();
 
         PreTurnChecks();
     }
@@ -202,6 +203,18 @@ public class GameManager : MonoBehaviour
         else
         {
             Board.DrawGhosts(matchingTile);
+        }
+    }
+
+    public void TryPlaceTile(Tile tile)
+    {
+        List<Interface> matchingInterfaces = Board.GetActiveMatches(tile);
+
+        if (matchingInterfaces.Count > 0)
+        {
+            Board.ClearGhosts();
+            List<Interface> tileMatchedInterfaces = tile.GetMatchingInterfaces(matchingInterfaces[0]);
+            Board.AddTile(tileMatchedInterfaces[0], matchingInterfaces[0]);
         }
     }
 }

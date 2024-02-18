@@ -9,6 +9,7 @@ public class Interface
     public Vector3 Center; // Local
     public TileSide Side;
     public Interface Connected;
+    public bool Open;
 
     public Interface(Tile parent, int value, TileSide side)
     {
@@ -17,6 +18,7 @@ public class Interface
         Center = SideToCenter(side);
         Side = side;
         Connected = null;
+        Open = true;
     }
 
     private static Vector3 SideToCenter(TileSide side)
@@ -42,13 +44,14 @@ public class Interface
 
     public bool IsOpen()
     {
-        return Connected == null;
+        return Open;
     }
 
     public void ConnectInterface(Interface interfaceToConnect)
     {
         Connected = interfaceToConnect;
         interfaceToConnect.Connected = this;
+        SetOpenState(false);
     }
 
     public Vector3 GetPosition(bool localPosition = false)
@@ -59,5 +62,10 @@ public class Interface
     public Vector3 GetPlacementPosition()
     {
         return Parent.TileVisual.transform.TransformPoint(Center*2f);
+    }
+
+    public void SetOpenState(bool state)
+    {
+        Open = state;
     }
 }
