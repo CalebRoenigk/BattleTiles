@@ -9,7 +9,10 @@ public class BoardVisual : MonoBehaviour
 {
     public static BoardVisual Instance;
 
+    public Board Board;
+
     [SerializeField] private Transform _boardParent;
+    [SerializeField] private Transform _placedParent;
     [SerializeField] private Transform _ghostParent;
     [SerializeField] private GameObject _ghostPrefab;
     [SerializeField] private List<TileGhostVisual> _ghostVisuals = new List<TileGhostVisual>();
@@ -61,12 +64,6 @@ public class BoardVisual : MonoBehaviour
         euler.y += _rotateBoard;
         _boardParent.localRotation = Quaternion.Euler(euler);
     }
-    
-    public void AddTile(Tile tile)
-    {
-        tile.TileVisual.transform.parent = _boardParent;
-        tile.TileVisual.gameObject.tag = "Board Tile";
-    }
 
     public void ClearGhosts(bool forceInstantClear = false)
     {
@@ -85,12 +82,11 @@ public class BoardVisual : MonoBehaviour
     public void DrawGhosts(Tile tile, List<Interface> matchedInterfaces)
     {
         // Spawn ghosts at their matched interfaces
-        bool firstMatch = true;
         foreach (Interface matchedInterface in matchedInterfaces)
         {
             Vector3 placementPosition = matchedInterface.GetPlacementPosition();
             TileGhostVisual tileGhostVisual = Instantiate(_ghostPrefab, placementPosition, Quaternion.identity, _ghostParent).GetComponent<TileGhostVisual>();
-            tileGhostVisual.SetTile(tile, firstMatch);
+            tileGhostVisual.SetTile(tile, Board.PrimaryMatch == matchedInterface);
             
             // Align the ghosts properly
             Quaternion alignedRotation = Quaternion.LookRotation(matchedInterface.GetPosition() - placementPosition, Vector3.up);
@@ -99,11 +95,11 @@ public class BoardVisual : MonoBehaviour
 
             // Add the ghost visual to the visuals list
             _ghostVisuals.Add(tileGhostVisual);
-
-            if (firstMatch)
-            {
-                firstMatch = false;
-            }
         }
+    }
+
+    public void SetPlacementParent(Transform transform)
+    {
+        transform.parent = _placedParent;
     }
 }

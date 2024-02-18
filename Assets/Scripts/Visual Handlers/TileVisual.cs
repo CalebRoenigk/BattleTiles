@@ -3,14 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEditor;
 
 public class TileVisual : MonoBehaviour
 {
     public Tile Tile;
 
     public bool Selected = false;
+    
+    [Header("Settings")]
+    [SerializeField] private float _placementDuration = 0.4f;
+    
+    [Header("References")]
     [SerializeField] private Material _material;
     [SerializeField] private BoxCollider _collider;
+    
+    [Header("Runtime")]
     [SerializeField] private bool _drawGizmos = false;
 
     private void Awake()
@@ -24,7 +32,7 @@ public class TileVisual : MonoBehaviour
         {
             transform.DOLocalMoveY(0.5f, 0.15f).SetEase(Ease.OutCubic);
             Selected = true;
-            Tile.Owner.Hand.HandVisual.UpdateSelection();
+            GameManager.Instance.UpdateSelection(Tile);
         }
     }
 
@@ -34,7 +42,7 @@ public class TileVisual : MonoBehaviour
         {
             transform.DOLocalMoveY(0f, 0.15f).SetEase(Ease.OutCubic);
             Selected = false;
-            Tile.Owner.Hand.HandVisual.UpdateSelection();
+            GameManager.Instance.UpdateSelection(null);
         }
     }
 
@@ -48,18 +56,30 @@ public class TileVisual : MonoBehaviour
     {
         if (_drawGizmos)
         {
+            Handles.color = Color.white;
+            foreach (Interface tileInterface in Tile.Interfaces)
+            {
+                Handles.Label(tileInterface.GetPosition(), tileInterface.Side.ToString());
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (_drawGizmos)
+        {
             // Draw all Interfaces and their states
-            Gizmos.matrix = Tile.TileVisual.transform.localToWorldMatrix;
             foreach (Interface tileInterface in Tile.Interfaces)
             {
                 Gizmos.color = tileInterface.Open ? Color.green : Color.red;
-                Vector3 interfacePosition = tileInterface.GetPosition(true)*0.5f;
+                Gizmos.matrix = Tile.TileVisual.transform.localToWorldMatrix;
+                Vector3 interfacePosition = tileInterface.Center*0.5f;
                 Vector3 gizmoSize = new Vector3(0.5f, 0.1875f, 1f);
                 if (tileInterface.Side == TileSide.Left || tileInterface.Side == TileSide.Right)
                 {
                     gizmoSize = new Vector3(1f, 0.1875f, 0.5f);
                 }
-
+            
                 if (tileInterface.Open)
                 {
                     Gizmos.DrawWireCube(interfacePosition, gizmoSize);
@@ -70,7 +90,15 @@ public class TileVisual : MonoBehaviour
                 }
                 
                 Gizmos.matrix = Matrix4x4.identity;
+
+                // Draw connection between interfaces
+                if (!tileInterface.Open)
+                {
+                    Gizmos.color = Color.black;
+                    Gizmos.DrawLine(tileInterface.GetPosition(), tileInterface.Connected.GetPosition());
+                }
             }
+            
         }
     }
 
@@ -95,5 +123,19 @@ public class TileVisual : MonoBehaviour
         _collider.size = new Vector3(1f, 0.1875f, 1f);
         _collider.isTrigger = false;
         _drawGizmos = true;
+    }
+
+    // Place the tile on the board
+    public void RelocateTile(Vector3 position, Quaternion rotation)
+    {
+        SetVisibility(1f);
+        ConfigurePlacedTile();
+        gameObject.layer = GameManager.Instance.Board.BoardTileMask;
+        gameObject.tag = "Board Tile";
+        
+        transform.DOKill();
+        transform.DOMove(position, _placementDuration).SetEase(Ease.InOutQuad);
+        transform.DORotate(rotation.eulerAngles, _placementDuration).SetEase(Ease.InOutQuad);
+        transform.DOScale(1f, _placementDuration).SetEase(Ease.InOutQuad);
     }
 }

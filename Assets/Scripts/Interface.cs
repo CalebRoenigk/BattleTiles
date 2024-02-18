@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Interface
@@ -47,10 +48,14 @@ public class Interface
         return Open;
     }
 
+    // Connects this interface to the passed interface
     public void ConnectInterface(Interface interfaceToConnect)
     {
         Connected = interfaceToConnect;
-        interfaceToConnect.Connected = this;
+        if (interfaceToConnect.Connected == null)
+        {
+            interfaceToConnect.ConnectInterface(this);
+        }
         SetOpenState(false);
     }
 
@@ -67,5 +72,43 @@ public class Interface
     public void SetOpenState(bool state)
     {
         Open = state;
+    }
+    
+    // Returns a quaternion that points towards the passed interface given an origin location and the
+    public Quaternion GetOrientationTowards(Vector3 origin, Interface targetInterface)
+    {
+        // Vector3 originLocalized = targetInterface.Parent.TileVisual.transform.InverseTransformPoint(origin);
+        // Vector3 alignmentDirection = targetInterface.Center - originLocalized;
+        //
+        // Quaternion baseQuaternion = quaternion.LookRotation(alignmentDirection.normalized, Vector3.up);
+        // Quaternion sideRotationOffset = GetSideQuaternion();
+        // baseQuaternion *= sideRotationOffset;
+        // return baseQuaternion;
+        
+        // Given this base quaternion we know that:
+        // First Tile Above, Placed Tile Below
+        // Example: Left to Right = 0
+        // Example: Top to Bottom = 0
+        // Example: Bottom to Top = 0
+        // Example: Right to Left = 0
+        // Example: Left to Top = -90
+        // Example: Left to Left = -180
+        // Example: Left to Bottom = 90
+        
+        // First Tile Right, Placed Tile Left
+        // Example: Bottom to Top = 0
+        // Example: Bottom to Bottom = -180
+        // Example: Bottom to Left = -90
+        // Example: Bottom to Right = 90;
+        Vector3 targetSideDirection = targetInterface.Center.normalized;
+        Vector3 placementSideDirection = Center.normalized;
+        Quaternion sidesAngularDifferential = Quaternion.FromToRotation(placementSideDirection, targetSideDirection);
+        float yDifferential = sidesAngularDifferential.eulerAngles.y;
+
+        Quaternion baseRotation = targetInterface.Parent.TileVisual.transform.rotation;
+        Quaternion alignedRotation = baseRotation * Quaternion.Euler(Vector3.up * yDifferential);
+        alignedRotation *= Quaternion.Euler(Vector3.up * 180f);
+
+        return alignedRotation;
     }
 }

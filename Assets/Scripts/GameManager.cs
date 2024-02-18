@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -51,6 +52,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             NextPlayer();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene("Scenes/SampleScene");
         }
     }
 
@@ -139,11 +145,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Places the highest tile currently in a hand and returns the index of the player that owned the tile
     private int PlaceHighestTileFromHands()
     {
         Tile highestTile = GetHighestTileFromHands();
-        
-        Board.PlaceRoot(highestTile);
+
+        Board.PlaceTile(highestTile, true);
         return highestTile.Owner.Index;
     }
     
@@ -153,7 +160,7 @@ public class GameManager : MonoBehaviour
         PlayerTurn++;
         PlayerTurn %= PlayerCount;
         Board.UpdateCache();
-        Board.ClearActiveMatches();
+        Board.UpdateSelection(null);
 
         PreTurnChecks();
     }
@@ -192,29 +199,20 @@ public class GameManager : MonoBehaviour
         Players[LastPlayerIndex()].EndTurn();
         Players[PlayerTurn].StartTurn();
     }
-    
-    // Updates the ghosts on the board
-    public void UpdateGhosts(Tile matchingTile)
-    {
-        if (matchingTile == null)
-        {
-            Board.ClearGhosts();
-        }
-        else
-        {
-            Board.DrawGhosts(matchingTile);
-        }
-    }
 
     public void TryPlaceTile(Tile tile)
     {
-        List<Interface> matchingInterfaces = Board.GetActiveMatches(tile);
-
-        if (matchingInterfaces.Count > 0)
+        if (Board.PrimaryMatch != null)
         {
-            Board.ClearGhosts();
-            List<Interface> tileMatchedInterfaces = tile.GetMatchingInterfaces(matchingInterfaces[0]);
-            Board.AddTile(tileMatchedInterfaces[0], matchingInterfaces[0]);
+            Board.PlaceTile(tile);
         }
+        
+        // TODO: Maybe add some kinda error state to show the player they cant place that tile
+    }
+
+    // Updates the ghost selection on the board
+    public void UpdateSelection(Tile tile)
+    {
+        Board.UpdateSelection(tile);
     }
 }
