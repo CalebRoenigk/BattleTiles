@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            NextPlayer();
+            EndTurn();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
             Player player = new Player(i, _startingHealth);
             PlayerHandVisual playerHandVisual = Instantiate(_playerHandPrefab, Vector3.zero, Quaternion.identity, _playerHandsParent).GetComponent<PlayerHandVisual>();
             playerHandVisual.SetHand(player.Hand);
+            HandViewManager.Instance.AddHand(playerHandVisual);
             Players.Add(i, player);
         }
     }
@@ -159,8 +160,6 @@ public class GameManager : MonoBehaviour
         TurnCount++;
         PlayerTurn++;
         PlayerTurn %= PlayerCount;
-        Board.UpdateCache();
-        Board.UpdateSelection(null);
 
         PreTurnChecks();
     }
@@ -174,6 +173,14 @@ public class GameManager : MonoBehaviour
         }
 
         return lastPlayerIndex;
+    }
+    
+    private int NextPlayerIndex()
+    {
+        int nextPlayerIndex = PlayerTurn + 1;
+        nextPlayerIndex %= PlayerCount;
+
+        return nextPlayerIndex;
     }
 
     // Checks to do before the turn starts, things like checks for hands that cannot place a tile, etc.
@@ -196,8 +203,27 @@ public class GameManager : MonoBehaviour
         // }
         
         // At the end of preturn checks, trigger the start of the turn
-        Players[LastPlayerIndex()].EndTurn();
         Players[PlayerTurn].StartTurn();
+    }
+
+    private void PostTurnChecks()
+    {
+        // TODO: Do any post turn checks
+        Board.UpdateSelection(null);
+        Board.UpdateCache();
+
+        // End the turn of the current player
+        Players[PlayerTurn].EndTurn();
+        
+        // Start the next turn
+        NextPlayer();
+    }
+
+    // Called after a tile placement is finished
+    public void EndTurn()
+    {
+        // TODO: Score/Dmg/etc? Or do I put all of those in post turn checks?
+        PostTurnChecks();
     }
 
     public void TryPlaceTile(Tile tile)
@@ -214,5 +240,16 @@ public class GameManager : MonoBehaviour
     public void UpdateSelection(Tile tile)
     {
         Board.UpdateSelection(tile);
+    }
+    
+    // Returns a list of the turn indices on either side of the current player turn
+    public List<int> GetPlayerTurnsReference()
+    {
+        List<int> playerTurns = new List<int>();
+        playerTurns.Add(LastPlayerIndex());
+        playerTurns.Add(PlayerTurn);
+        playerTurns.Add(NextPlayerIndex());
+
+        return playerTurns;
     }
 }

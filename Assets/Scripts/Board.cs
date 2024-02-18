@@ -40,7 +40,6 @@ public class Board
             placedInterface.ConnectInterface(PrimaryMatch);
             placementPosition = PrimaryMatch.GetPlacementPosition();
             placementRotation = placedInterface.GetOrientationTowards(placementPosition, PrimaryMatch);
-            // TODO: Determine placement rotation of the tile
         }
 
         // Remove the tile from the hand
@@ -55,7 +54,7 @@ public class Board
         
         // Flag cache for update
         _contentsChanged = true;
-        UpdateCache();
+        // Note that placing the tile has been changed to only flag the cache for updates, but no longer forces an update directly after placement (relying on the post-turn checks to do the cache update). This shouldn't be an issue given that post-turn checks fire directly after placement!
     }
 
     // Updates the data cache of the board

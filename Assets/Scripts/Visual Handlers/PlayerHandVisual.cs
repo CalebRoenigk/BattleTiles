@@ -14,7 +14,6 @@ public class PlayerHandVisual : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float _perferedSpacing = 0.2f;
-    [SerializeField] private float _handWidth;
     [SerializeField] private float _handScale;
     [SerializeField] private float _staggerDepth = 0.4f;
 
@@ -22,19 +21,10 @@ public class PlayerHandVisual : MonoBehaviour
     public bool Interactable = false;
     [SerializeField] private bool _viewingState = false;
 
-    private void Update()
-    {
-        if (_viewingState)
-        {
-            SetTransformFromView();
-        }
-    }
-
     public void SetHand(Hand hand)
     {
         Hand = hand;
         Hand.HandVisual = this;
-        CameraManager.Instance.GetHandSettings(out _handWidth, out _handScale);
         transform.localScale = Vector3.one * _handScale;
         gameObject.name = "Player " + Hand.Owner.Index;
     }
@@ -44,6 +34,11 @@ public class PlayerHandVisual : MonoBehaviour
         TileVisual visualTile = Instantiate(_visualTilePrefab, transform.position, Quaternion.identity, transform).GetComponent<TileVisual>();
         visualTile.transform.localPosition = new Vector3(0f, -2f, 0f);
         visualTile.SetTile(tile);
+        if (!_viewingState)
+        {
+            // The tile was added to a hand who is currently not viewed. Force the tile to be invisible
+            visualTile.SetVisibility(0f, true);
+        }
         RefreshTileVisualList();
         UpdateHandVisuals();
     }
@@ -60,34 +55,31 @@ public class PlayerHandVisual : MonoBehaviour
     
     public List<Vector3> GetHandPositions()
     {
-        CameraManager.Instance.GetHandSettings(out _handWidth, out _handScale);
-        float unscaledWidth = _handWidth;
         int tileCount = Hand.Tiles.Count;
-        float stepSize = Mathf.Min(1f + _perferedSpacing, unscaledWidth / (tileCount - 1));
+        float stepSize = HandViewManager.Instance.HandTargetWidth / (tileCount - 1);
+        stepSize = Mathf.Min(stepSize, 1f + _perferedSpacing);
         bool mustStagger = stepSize < 1f + _perferedSpacing;
-        Vector3 centeringOffset = Vector3.zero;
-        
-        if (stepSize * tileCount < unscaledWidth)
-        {
-            centeringOffset.x = (unscaledWidth - (stepSize * tileCount))/2f;
-        }
+        float sizeDifference = HandViewManager.Instance.HandTargetWidth - (stepSize * tileCount);
+        Vector3 centeringOffset = new Vector3(-(stepSize * tileCount) / 2f, 0f, 0f);
         
         List<Vector3> handPositions = new List<Vector3>();
-        Vector3 startPoint = new Vector3(-unscaledWidth / 2f, 0f, 0f);
-        Vector3 endPoint = new Vector3(unscaledWidth / 2f, 0f, 0f);
         for (int i = 0; i < tileCount; i++)
         {
-            float t = i / (float)(tileCount - 1);
-            Vector3 point = Vector3.Lerp(startPoint, endPoint, t) + centeringOffset;
+            float t = i / (float)(tileCount-1);
+            Vector3 point = Vector3.Lerp(Vector3.zero, new Vector3(stepSize * tileCount, 0f, 0f), t) + centeringOffset;
         
             if (mustStagger && i % 2 != 0)
             {
                 point.z += _staggerDepth;
             }
+            else
+            {
+                point.z = 0;
+            }
             
             handPositions.Add(point);
         }
-
+        
         return handPositions;
     }
 
@@ -102,7 +94,7 @@ public class PlayerHandVisual : MonoBehaviour
             Vector3 localPos = visualTile.transform.localPosition;
             localPos.z = handPositions[i].z;
             visualTile.transform.localPosition = localPos;
-            visualTile.transform.DOMoveX(handPositions[i].x, 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
+            visualTile.transform.DOLocalMoveX(handPositions[i].x, 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
             visualTile.transform.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
         }
     }
@@ -137,7 +129,6 @@ public class PlayerHandVisual : MonoBehaviour
         Sequence animateOffSequence = DOTween.Sequence();
         animateOffSequence.InsertCallback(0.175f, () => SetViewingState(false));
         animateOffSequence.InsertCallback(0.175f, DisableTiles);
-        
     }
 
     // Enables all tiles in the hand
@@ -157,17 +148,7 @@ public class PlayerHandVisual : MonoBehaviour
             tileVisual.SetVisibility(0f);
         }
     }
-    
-    // Sets the transform of the rotation and position given the camera view
-    private void SetTransformFromView()
-    {
-        Vector3 position;
-        Quaternion rotation;
-        CameraManager.Instance.GetHandTransforms(out position, out rotation);
-        transform.position = position;
-        transform.rotation = rotation;
-    }
-    
+
     // Updates the tile visual list
     public void RefreshTileVisualList()
     {

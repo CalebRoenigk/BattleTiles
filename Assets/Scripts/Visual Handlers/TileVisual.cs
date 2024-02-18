@@ -134,8 +134,11 @@ public class TileVisual : MonoBehaviour
         gameObject.tag = "Board Tile";
         
         transform.DOKill();
-        transform.DOMove(position, _placementDuration).SetEase(Ease.InOutQuad);
-        transform.DORotate(rotation.eulerAngles, _placementDuration).SetEase(Ease.InOutQuad);
-        transform.DOScale(1f, _placementDuration).SetEase(Ease.InOutQuad);
+
+        Sequence placementSequence = DOTween.Sequence();
+        placementSequence.Append(transform.DOMove(position, _placementDuration).SetEase(Ease.InOutQuad));
+        placementSequence.Insert(0f, transform.DORotate(rotation.eulerAngles, _placementDuration).SetEase(Ease.InOutQuad));
+        placementSequence.Insert(0f, transform.DOScale(1f, _placementDuration).SetEase(Ease.InOutQuad));
+        placementSequence.AppendCallback(GameManager.Instance.EndTurn);
     }
 }
