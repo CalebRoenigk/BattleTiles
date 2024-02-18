@@ -550,6 +550,7 @@ MonoBehaviour:
   _ghostParent: {fileID: 362072809}
   _ghostPrefab: {fileID: 3027982903267366856, guid: 174d7ad3d40fb4ac4b29e6a5a7dec8c8,
     type: 3}
+  _ghostVisuals: []
   _rotateBoard: 0
   _rotationSpeedRamp: 0.5
   _rotationSpeedMax: 15
@@ -714,7 +715,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
