@@ -20,10 +20,10 @@ public class Hand
         Tiles.Add(tile);
     }
 
-    public Tile RemoveTile(Tile tile)
+    public void RemoveTile(Tile tile)
     {
         Tiles.Remove(tile);
-        return tile;
+        HandVisual.RefreshTileVisualList();
     }
 
     public List<Interface> GetMatchingInterfaces(Interface inputInterface)

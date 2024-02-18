@@ -20,7 +20,6 @@ public class PlayerHandVisual : MonoBehaviour
 
     [Header("State")]
     public bool Interactable = false;
-    public Tile SelectedTile = null;
     [SerializeField] private bool _viewingState = false;
 
     private void Update()
@@ -108,22 +107,6 @@ public class PlayerHandVisual : MonoBehaviour
         }
     }
 
-    public void PlaceTile(Tile tile, Vector3 position, Quaternion rotation)
-    {
-        Hand.RemoveTile(tile);
-        tile.TileVisual.SetVisibility(1f);
-        tile.TileVisual.ConfigurePlacedTile();
-
-        tile.TileVisual.transform.DOKill();
-        tile.TileVisual.transform.DOMove(position, 0.375f).SetEase(Ease.InOutQuad);
-        tile.TileVisual.transform.DORotate(rotation.eulerAngles, 0.375f).SetEase(Ease.InOutQuad);
-        tile.TileVisual.transform.DOScale(1f, 0.375f).SetEase(Ease.InOutQuad);
-
-        GameManager.Instance.Board.UpdateTileParent(tile);
-        
-        RefreshTileVisualList();
-    }
-    
     // Shows the player hand in-front of the camera
     public void ShowHand()
     {
@@ -186,7 +169,7 @@ public class PlayerHandVisual : MonoBehaviour
     }
     
     // Updates the tile visual list
-    private void RefreshTileVisualList()
+    public void RefreshTileVisualList()
     {
         _tileVisuals.Clear();
 
@@ -208,21 +191,6 @@ public class PlayerHandVisual : MonoBehaviour
             }
         }
 
-        UpdateSelection();
-    }
-    
-    // Updates the selection of the hand
-    public void UpdateSelection()
-    {
-        SelectedTile = null;
-        foreach (TileVisual tileVisual in _tileVisuals)
-        {
-            if (tileVisual.Selected)
-            {
-                SelectedTile = tileVisual.Tile;
-            }
-        }
-
-        GameManager.Instance.UpdateGhosts(SelectedTile);
+        GameManager.Instance.UpdateSelection(null);
     }
 }

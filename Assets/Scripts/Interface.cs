@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Interface
@@ -47,10 +48,14 @@ public class Interface
         return Open;
     }
 
+    // Connects this interface to the passed interface
     public void ConnectInterface(Interface interfaceToConnect)
     {
         Connected = interfaceToConnect;
-        interfaceToConnect.Connected = this;
+        if (interfaceToConnect.Connected == null)
+        {
+            interfaceToConnect.ConnectInterface(this);
+        }
         SetOpenState(false);
     }
 
@@ -67,5 +72,20 @@ public class Interface
     public void SetOpenState(bool state)
     {
         Open = state;
+    }
+    
+    // Returns a quaternion that points towards the passed interface given an origin location and the
+    public Quaternion GetOrientationTowards(Vector3 origin, Interface targetInterface)
+    {
+        Vector3 targetSideDirection = targetInterface.Center.normalized;
+        Vector3 placementSideDirection = Center.normalized;
+        Quaternion sidesAngularDifferential = Quaternion.FromToRotation(placementSideDirection, targetSideDirection);
+        float yDifferential = sidesAngularDifferential.eulerAngles.y;
+
+        Quaternion baseRotation = targetInterface.Parent.TileVisual.transform.rotation;
+        Quaternion alignedRotation = baseRotation * Quaternion.Euler(Vector3.up * yDifferential);
+        alignedRotation *= Quaternion.Euler(Vector3.up * 180f);
+
+        return alignedRotation;
     }
 }

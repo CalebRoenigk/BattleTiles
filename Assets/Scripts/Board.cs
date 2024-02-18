@@ -12,23 +12,49 @@ public class Board
     public List<Tile> OpenTiles = new List<Tile>(); // Cache
     public List<Interface> OpenInterfaces = new List<Interface>(); // Cache
     public List<int> OpenValues = new List<int>(); // Cache
+    public Interface PrimaryMatch;
     public List<Interface> ActiveMatches = new List<Interface>();
-
-    [SerializeField] private int _boardTileMask = 7;
+    public int BoardTileMask = 7;
 
     private bool _contentsChanged = false;
 
     public Board()
     {
         BoardVisual = BoardVisual.Instance;
+        BoardVisual.Board = this;
     }
 
-    public void PlaceRoot(Tile tile)
+    public void PlaceTile(Tile tile, bool isRoot = false)
     {
-        Root = tile;
-        OpenTiles.Add(tile);
+        BoardVisual.ClearGhosts();
+        
+        Vector3 placementPosition = Vector3.zero;
+        Quaternion placementRotation = Quaternion.identity;
+        if (isRoot)
+        {
+            Root = tile;
+        }
+        else
+        {
+            Interface placedInterface = tile.GetMatchingInterfaces(PrimaryMatch, true)[0];
+            placedInterface.ConnectInterface(PrimaryMatch);
+            placementPosition = PrimaryMatch.GetPlacementPosition();
+            placementRotation = placedInterface.GetOrientationTowards(placementPosition, PrimaryMatch);
+            // TODO: Determine placement rotation of the tile
+        }
+
+        // Remove the tile from the hand
+        tile.Owner.Hand.RemoveTile(tile);
+        BoardVisual.SetPlacementParent(tile.TileVisual.transform);
+        tile.TileVisual.RelocateTile(placementPosition, placementRotation);
+        CameraManager.Instance.AddTileToBoardTargets(tile);
+
+        // After placement do a check to see if any interfaces that are open now need to be closed given the newly placed tiles proximity to other tiles
+        // TODO: Enable this and work thru it
+        // CheckNearbyInterfaces(connectedInterface.GetPlacementPosition(), placedInterface.Parent);
+        
+        // Flag cache for update
         _contentsChanged = true;
-        tile.Owner.Hand.HandVisual.PlaceTile(tile, Vector3.zero, Quaternion.Euler(0f, 0f, 0f));
         UpdateCache();
     }
 
@@ -74,51 +100,16 @@ public class Board
         return OpenInterfaces.Where(i => i.Value == inputInterface.Value && i.IsOpen()).ToList();
     }
 
-    public void AddTile(Interface placedInterface, Interface connectedInterface)
-    {
-        placedInterface.ConnectInterface(connectedInterface);
-        placedInterface.Parent.Owner.Hand.HandVisual.PlaceTile(placedInterface.Parent, connectedInterface.GetPlacementPosition(), Quaternion.Euler(0f, 0f, 0f));
-        _contentsChanged = true;
-        // After placement do a check to see if any interfaces that are open now need to be closed given the newly placed tiles proximity to other tiles
-        CheckNearbyInterfaces(connectedInterface.GetPlacementPosition(), placedInterface.Parent);
-        UpdateCache();
-    }
-
-    public void UpdateTileParent(Tile tile)
-    {
-        tile.TileVisual.gameObject.layer = _boardTileMask;
-        CameraManager.Instance.AddTileToBoardTargets(tile);
-        BoardVisual.AddTile(tile);
-    }
-
-    public void ClearGhosts()
-    {
-        BoardVisual.ClearGhosts();
-    }
-
-    public void DrawGhosts(Tile tile)
-    {
-        // Clear Ghosts First
-        BoardVisual.ClearGhosts(true);
-        ActiveMatches.Clear();
-
-        ActiveMatches = GetActiveMatches(tile);
-
-        if (ActiveMatches.Count > 0)
-        {
-            BoardVisual.DrawGhosts(tile, ActiveMatches);
-        }
-    }
-
     public List<Interface> GetActiveMatches(Tile tile)
     {
         // Filter the open interfaces on the board to match with this one
         List<Interface> topMatches = GetMatchingOpenInterfaces(tile.Interfaces.Find(i => i.Side == TileSide.Top));
-        List<Interface> bottomMatches = GetMatchingOpenInterfaces(tile.Interfaces.Find(i => i.Side == TileSide.Bottom));
+        List<Interface> bottomMatches = new List<Interface>();
 
-        if (tile.IsDouble())
+        // If the tile is not a double the matches for top and bottom will be unique, find the bottom matches
+        if (!tile.IsDouble())
         {
-            bottomMatches.Clear();
+            bottomMatches = GetMatchingOpenInterfaces(tile.Interfaces.Find(i => i.Side == TileSide.Bottom));
         }
 
         List<Interface> activeMatches = new List<Interface>();
@@ -130,23 +121,18 @@ public class Board
 
             activeMatches.Distinct();
 
-            Shuffle(activeMatches, GameManager.Instance.PlayerTurn + GameManager.Instance.TurnCount);
+            ListUtility.Shuffle(activeMatches, GameManager.Instance.PlayerTurn + GameManager.Instance.TurnCount);
         }
 
         return activeMatches;
     }
 
-    public void ClearActiveMatches()
-    {
-        ActiveMatches.Clear();
-    }
-    
     // Called after a tile is placed, this method checks for any open interfaces nearby a placement that are now obscured by the placement and need to be marked as closed
     private void CheckNearbyInterfaces(Vector3 placementLocation, Tile tile)
     {
         // Find all tiles within a radius of the placed tile
         float checkRadius = 1.25f;
-        Collider[] hitColliders = Physics.OverlapSphere(placementLocation, checkRadius, _boardTileMask);
+        Collider[] hitColliders = Physics.OverlapSphere(placementLocation, checkRadius, BoardTileMask);
         List<Interface> openInterfacesInRange = new List<Interface>();
         foreach (var hitCollider in hitColliders)
         {
@@ -176,18 +162,37 @@ public class Board
         }
     }
     
-    // TODO: Move this method into its own class of list stuff, so it can be used more broadly
-    private static void Shuffle<T>(List<T> list, int seed = 0)
+    // Updates the selection of interfaces given a matching tile
+    public void UpdateSelection(Tile tile)
     {
-        System.Random rng = new System.Random(seed);
-        int n = list.Count;
-        while (n > 1)
+        // Clear the selection and selection list
+        PrimaryMatch = null;
+        ActiveMatches.Clear();
+        
+        if (tile == null)
         {
-            n--;
-            int k = rng.Next(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
+            // Clear Ghosts
+            BoardVisual.ClearGhosts();
+        }
+        else
+        {
+            // Update the selection and selection list
+            ActiveMatches = GetActiveMatches(tile);
+
+            if (ActiveMatches.Count > 0)
+            {
+                PrimaryMatch = ActiveMatches[0];
+                
+                // Clear Ghosts First
+                BoardVisual.ClearGhosts(true);
+                
+                // Draw new ghosts
+                BoardVisual.DrawGhosts(tile, ActiveMatches);
+            }
+            else
+            {
+                BoardVisual.ClearGhosts();
+            }
         }
     }
 }

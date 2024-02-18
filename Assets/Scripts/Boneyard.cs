@@ -17,7 +17,7 @@ public class Boneyard
     {
         List<Tile> tiles = new List<Tile>();
         
-        // Generate and print all possible dominos
+        // Generate all possible tiles
         for (int i = 0; i <= _maxValue; i++)
         {
             for (int j = i; j <= _maxValue; j++)

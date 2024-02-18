@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="140d1408-76c5-4ad4-8ca1-9b99bdd80716" name="Changes" comment="" />
+    <list default="true" id="140d1408-76c5-4ad4-8ca1-9b99bdd80716" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Boneyard.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Boneyard.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Interface.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Interface.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,8 +24,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/CameraManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Old Scripts/Domino.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/TestCamPlacement.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/ListUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Visual Handlers/BoardVisual.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Visual Handlers/PlayerHandVisual.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TileGhostVisual.cs" root0="FORCE_HIGHLIGHTING" />
@@ -46,6 +49,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "rider.run.widget.enabled.cache": "false",
+    "settings.editor.selected.configurable": "CodeInspectionSettingsId",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -87,7 +91,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1708102801688</updated>
-      <workItem from="1708102804235" duration="33377000" />
+      <workItem from="1708102804235" duration="40924000" />
     </task>
     <servers />
   </component>
