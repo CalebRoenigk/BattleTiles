@@ -25,7 +25,6 @@ public class DamageTallyUI : MonoBehaviour
     public void AddCount(int addValue, bool isLast = false)
     {
         _tallyCount += addValue;
-        Debug.Log("Size is going to be: " + GetScaleFactor(Mathf.Abs(_tallyCount)));
         ((Transform)_transform).DOScale(Vector3.one * GetScaleFactor(Mathf.Abs(_tallyCount)), 0.4f).SetEase(Ease.OutElastic);
         if (isLast)
         {

@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="140d1408-76c5-4ad4-8ca1-9b99bdd80716" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/PlayerHandVisual.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/PlayerHandVisual.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/UI Test Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/UI Test Scene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UI/DamageTallyUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UI/DamageTallyUI.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +34,10 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/TileGlowEffect.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/DamageCountUI.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/DamageUIHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/HealthBarSegment.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/PlayerHealthBarUI.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/PlayerUI.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/UI/UIManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Visual Handlers/BoardVisual.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Visual Handlers/PlayerHandVisual.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TemporaryUI.cs" root0="FORCE_HIGHLIGHTING" />
@@ -98,7 +105,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1708102801688</updated>
-      <workItem from="1708102804235" duration="65227000" />
+      <workItem from="1708102804235" duration="72607000" />
     </task>
     <servers />
   </component>

@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     
     [Header("Game Setup Variables")]
     public int PlayerCount = 4;
-    [SerializeField] private int _startingHealth = 100;
+    public int StartingHealth = 100;
     [SerializeField] private int _startingHandSize = 5;
 
     [Header("Scoring and Health")]
@@ -91,11 +91,12 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < playerCount; i++) 
         {
-            Player player = new Player(i, _startingHealth);
+            Player player = new Player(i, StartingHealth);
             PlayerHandVisual playerHandVisual = Instantiate(_playerHandPrefab, Vector3.zero, Quaternion.identity, _playerHandsParent).GetComponent<PlayerHandVisual>();
             playerHandVisual.SetHand(player.Hand);
             HandViewManager.Instance.AddHand(playerHandVisual);
             Players.Add(i, player);
+            UIManager.Instance.AddPlayer(player);
         }
     }
 
@@ -353,6 +354,7 @@ public class GameManager : MonoBehaviour
         }
 
         _damageUIHandler.DisplayDamageTally(DamageTally.CondenseIntoSingle(damageTallies));
+        UIManager.Instance.UpdatePlayerHealth();
     }
 
     // Checks if the current player's hand has any playable tiles
