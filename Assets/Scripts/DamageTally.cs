@@ -6,6 +6,7 @@ public class DamageTally
 {
     public int Damage;
     public int OwnerIndex;
+    public int SourceValue;
     public List<int> PlayersEffected;
     public List<Interface> InterfaceSources = new List<Interface>();
 
@@ -15,5 +16,6 @@ public class DamageTally
         OwnerIndex = ownerIndex;
         PlayersEffected = playersEffected;
         InterfaceSources = interfaceSources;
+        SourceValue = interfaceSources[0].Value;
     }
 }

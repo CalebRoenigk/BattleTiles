@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,6 +22,7 @@ public class GameManager : MonoBehaviour
     [Header("State")]
     public int PlayerTurn = -1;
     public int TurnCount = -1;
+    [SerializeField] private bool _playerPlaced = false;
     
     [Header("Players")]
     public Dictionary<int, Player> Players = new Dictionary<int, Player>();
@@ -32,6 +34,7 @@ public class GameManager : MonoBehaviour
     
     [Header("Board")]
     public Board Board;
+    [SerializeField] private TileGlowColors _tileGlowColors;
 
     private void Awake() 
     { 
@@ -193,6 +196,10 @@ public class GameManager : MonoBehaviour
     {
         // Update the Temp UI
         TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
+        
+        // Reset the player placed bool
+        _playerPlaced = false;
+        
         // Debug.Log("Preturn Checks!");
         // TODO: FIX THIS
         // if (!Players[PlayerTurn].PlayerHand.CheckMatchingDominos())
@@ -220,41 +227,51 @@ public class GameManager : MonoBehaviour
         Board.UpdateSelection(null);
         Board.UpdateCache();
         
-        // Collect all open interfaces to tally up the score
-        Dictionary<int, List<Interface>> groupedOpenInterfaces = Board.GetGroupedOpenInterfaces();
-        
-        // Filter the dictonary so that only interfaces with 3 or more of a value remain
-        groupedOpenInterfaces.Where(kvp => kvp.Value.Count >= 3).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        
-        // For each remaining group tally up the total damage for that group
-        List<DamageTally> damageTallies = new List<DamageTally>();
-        foreach (var groupedInterfaces in groupedOpenInterfaces)
+        // Only do a damage calculation if the player placed a tile
+        if (_playerPlaced)
         {
-            int interfaceValue = groupedInterfaces.Key;
-            int sourcePlayer = PlayerTurn;
-            List<Interface> sources = groupedInterfaces.Value;
-            int damage;
-            List<int> effected = new List<int>();
-
-            if (interfaceValue == 5)
-            {
-                // Heal the player
-                effected.Add(PlayerTurn);
-                damage = sources.Count * -_healthCardValue;
-            }
-            else
-            {
-                // Do damage to all other players
-                effected.AddRange(GetAllPlayerIndices(true));
-                damage = sources.Count * _damageCardValue;
-            }
+            // Collect all open interfaces to tally up the score
+            Dictionary<int, List<Interface>> groupedOpenInterfaces = Board.GetGroupedOpenInterfaces();
+        
+            // Filter the dictonary so that only interfaces with 3 or more of a value remain
+            groupedOpenInterfaces = groupedOpenInterfaces.Where(kvp => kvp.Value.Count >= 3).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        
+            // Debug.Log("Interfaces with more than 3: ");
+            // foreach (var VARIABLE in groupedOpenInterfaces)
+            // {
+            //     
+            // }
             
-            damageTallies.Add(new DamageTally(damage, sourcePlayer, effected, sources));
+            // For each remaining group tally up the total damage for that group
+            List<DamageTally> damageTallies = new List<DamageTally>();
+            foreach (var groupedInterfaces in groupedOpenInterfaces)
+            {
+                int interfaceValue = groupedInterfaces.Key;
+                int sourcePlayer = PlayerTurn;
+                List<Interface> sources = groupedInterfaces.Value;
+                int damage;
+                List<int> effected = new List<int>();
+
+                if (interfaceValue == 5)
+                {
+                    // Heal the player
+                    effected.Add(PlayerTurn);
+                    damage = sources.Count * -_healthCardValue;
+                }
+                else
+                {
+                    // Do damage to all other players
+                    effected.AddRange(GetAllPlayerIndices(true));
+                    damage = sources.Count * _damageCardValue;
+                }
+            
+                damageTallies.Add(new DamageTally(damage, sourcePlayer, effected, sources));
+            }
+        
+            // Apply that damage to all effected players (outlined by the damage values class)
+            ApplyDamages(damageTallies);
         }
-        
-        // Apply that damage to all effected players (outlined by the damage values class)
-        ApplyDamages(damageTallies);
-        
+
         // Update the player UI
         TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
 
@@ -277,6 +294,7 @@ public class GameManager : MonoBehaviour
         if (Board.PrimaryMatch != null)
         {
             Board.PlaceTile(tile);
+            _playerPlaced = true;
         }
         
         // TODO: Maybe add some kinda error state to show the player they cant place that tile
@@ -320,6 +338,12 @@ public class GameManager : MonoBehaviour
             foreach (int effectedPlayerIndex in damageTally.PlayersEffected)
             {
                 Players[effectedPlayerIndex].DoDamage(damageTally.Damage);
+            }
+            
+            // Visually display the damage tiles
+            foreach (Interface source in damageTally.InterfaceSources)
+            {
+                BoardVisual.Instance.SpawnGlow(source.Parent.TileVisual.transform.position, Quaternion.LookRotation((source.GetPlacementPosition() - source.Parent.TileVisual.transform.position).normalized, Vector3.up), _tileGlowColors.GetGlowColors(damageTally.SourceValue), source);
             }
         }
     }

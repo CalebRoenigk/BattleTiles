@@ -699,6 +699,7 @@ Transform:
   - {fileID: 1833517734}
   - {fileID: 362072809}
   - {fileID: 288134651}
+  - {fileID: 1061508888}
   m_Father: {fileID: 1618028274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1006361025
@@ -716,13 +717,47 @@ MonoBehaviour:
   _boardParent: {fileID: 1006361024}
   _placedParent: {fileID: 288134651}
   _ghostParent: {fileID: 362072809}
+  _effectsParent: {fileID: 1061508888}
   _ghostPrefab: {fileID: 3027982903267366856, guid: 174d7ad3d40fb4ac4b29e6a5a7dec8c8,
+    type: 3}
+  _tileGlowEffect: {fileID: 5611327147613043184, guid: b7cbddad4721147259c94fba8c70e614,
     type: 3}
   _ghostVisuals: []
   _rotateBoard: 0
   _rotationSpeedRamp: 0.5
   _rotationSpeedMax: 15
   _rotationSpeedSlow: 0.005
+--- !u!1 &1061508887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1061508888}
+  m_Layer: 7
+  m_Name: Effects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1061508888
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061508887}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006361024}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1357253866
 GameObject:
   m_ObjectHideFlags: 0
@@ -974,11 +1009,14 @@ MonoBehaviour:
   PlayerCount: 4
   _startingHealth: 100
   _startingHandSize: 5
+  _healthCardValue: 5
+  _damageCardValue: 8
   PlayerTurn: -1
   TurnCount: -1
   _playerHandsParent: {fileID: 1638095104}
   _playerHandPrefab: {fileID: 4650268820450262421, guid: bf7bb99143ba64174b8a06bfa7899d1c,
     type: 3}
+  _tileGlowColors: {fileID: 11400000, guid: db0f693caea6a4987914615eb4ed4ef0, type: 2}
 --- !u!1 &1638095103
 GameObject:
   m_ObjectHideFlags: 0
