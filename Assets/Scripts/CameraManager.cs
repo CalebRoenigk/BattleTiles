@@ -77,6 +77,12 @@ public class CameraManager : MonoBehaviour
                 {
                     Gizmos.DrawSphere(pt, 0.01f);
                 }
+                
+                Vector3 mousePos = Input.mousePosition;
+                mousePos.z = 4f;
+                Vector3 mouse = MainCamera.ScreenToWorldPoint(mousePos);
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(mouse, 0.01f);
             }
         }
     }

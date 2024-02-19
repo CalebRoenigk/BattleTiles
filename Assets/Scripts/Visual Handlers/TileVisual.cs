@@ -20,6 +20,7 @@ public class TileVisual : MonoBehaviour
     
     [Header("Runtime")]
     [SerializeField] private bool _drawGizmos = false;
+    [SerializeField] private bool _isDragging = false;
 
     private void Awake()
     {
@@ -28,7 +29,7 @@ public class TileVisual : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable)
+        if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable && !_isDragging)
         {
             transform.DOLocalMoveY(0.5f, 0.15f).SetEase(Ease.OutCubic);
             Selected = true;
@@ -38,7 +39,7 @@ public class TileVisual : MonoBehaviour
 
     private void OnMouseExit()
     {
-        if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable)
+        if (Tile.IsInHand() && Tile.Owner.Hand.HandVisual.Interactable && !_isDragging)
         {
             transform.DOLocalMoveY(0f, 0.15f).SetEase(Ease.OutCubic);
             Selected = false;
@@ -46,10 +47,29 @@ public class TileVisual : MonoBehaviour
         }
     }
 
+    private void OnMouseDrag()
+    {
+        _isDragging = true;
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = 4f;
+        Vector3 mouse = CameraManager.Instance.MainCamera.ScreenToWorldPoint(mousePos);
+
+        transform.position = mouse;
+    }
+
+    private void OnMouseUp()
+    {
+        _isDragging = false;
+        Tile.Owner.Hand.HandVisual.UpdateHandVisuals();
+    }
+
     private void OnMouseDown()
     {
         // Try and place the tile
-        GameManager.Instance.TryPlaceTile(Tile);
+        // GameManager.Instance.TryPlaceTile(Tile);
+        
+        // Drag has started
+        _isDragging = true;
     }
 
     private void OnDrawGizmos()
