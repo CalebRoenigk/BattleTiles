@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74afe302255ae4aabbc5941dce39df11, type: 3}
+  m_Name: TileGlowColors
+  m_EditorClassIdentifier: 
+  _tileGlowProperties:
+  - Value: 0
+    BaseColor: {r: 1.4980394, g: 0.892949, b: 0.099869296, a: 1}
+    FadeColor: {r: 0.18627451, g: 0.09411765, b: 0.07058824, a: 0}
+  - Value: 1
+    BaseColor: {r: 1.4980394, g: 0, b: 0.14099193, a: 1}
+    FadeColor: {r: 0.1392157, g: 0, b: 0.05, a: 0}
+  - Value: 2
+    BaseColor: {r: 0.081219, g: 0.52341133, b: 1.4980392, a: 1}
+    FadeColor: {r: 0.015686275, g: 0.024509804, b: 0.05392157, a: 0}
+  - Value: 3
+    BaseColor: {r: 1.4980392, g: 1.1103115, b: 1.1103115, a: 1}
+    FadeColor: {r: 0.07156863, g: 0.06764706, b: 0.10098039, a: 0}
+  - Value: 4
+    BaseColor: {r: 0, g: 1.4980392, b: 0.10146084, a: 1}
+    FadeColor: {r: 0, g: 0.13039216, b: 0.03529412, a: 0}
+  - Value: 5
+    BaseColor: {r: 0.4934717, g: 1.4275432, b: 1.4980391, a: 1}
+    FadeColor: {r: 0, g: 0.00814951, b: 0.04142157, a: 0}
+  - Value: 6
+    BaseColor: {r: 1.4980394, g: 1.1161863, b: 1.1573088, a: 1}
+    FadeColor: {r: 0.1392157, g: 0.06764706, b: 0.10882353, a: 0}
+  - Value: 7
+    BaseColor: {r: 1.498039, g: 0.3507313, b: 0.65985054, a: 1}
+    FadeColor: {r: 0.068627454, g: 0.020588236, b: 0.05392157, a: 0}
+  - Value: 8
+    BaseColor: {r: 1.4980391, g: 1.4157939, b: 0, a: 1}
+    FadeColor: {r: 0.1392157, g: 0.09313726, b: 0, a: 0}
+  - Value: 9
+    BaseColor: {r: 0, g: 1.4980392, b: 0.15802102, a: 1}
+    FadeColor: {r: 0, g: 0.07745098, b: 0.051960785, a: 0}

@@ -38,4 +38,10 @@ public class Player
         // Trigger turn end for the player hand visual
         Hand.HandVisual.HideHand();
     }
+
+    public void DoDamage(int damage)
+    {
+        Health -= damage;
+        Health = Mathf.RoundToInt(Mathf.Max(Health, 0)); // Clamp the health to not fall below zero
+    }
 }

@@ -121,4 +121,19 @@ public class Tile
     {
         return Owner.Hand.Tiles.Contains(this);
     }
+
+    public List<int> GetValues()
+    {
+        List<int> values = new List<int>();
+        
+        foreach (Interface tileInterface in Interfaces)
+        {
+            if (!values.Contains(tileInterface.Value))
+            {
+                values.Add(tileInterface.Value);
+            }
+        }
+
+        return values;
+    }
 }

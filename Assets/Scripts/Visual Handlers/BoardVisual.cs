@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardVisual : MonoBehaviour
@@ -14,12 +15,15 @@ public class BoardVisual : MonoBehaviour
     [SerializeField] private Transform _boardParent;
     [SerializeField] private Transform _placedParent;
     [SerializeField] private Transform _ghostParent;
+    [SerializeField] private Transform _effectsParent;
     [SerializeField] private GameObject _ghostPrefab;
+    [SerializeField] private GameObject _tileGlowEffect;
     [SerializeField] private List<TileGhostVisual> _ghostVisuals = new List<TileGhostVisual>();
     [SerializeField] private float _rotateBoard = 0f;
     [SerializeField] private float _rotationSpeedRamp = 0.05f;
     [SerializeField] private float _rotationSpeedMax = 10f;
     [SerializeField] private float _rotationSpeedSlow = 0.075f;
+    
     
     private void Awake() 
     { 
@@ -101,5 +105,10 @@ public class BoardVisual : MonoBehaviour
     public void SetPlacementParent(Transform transform)
     {
         transform.parent = _placedParent;
+    }
+
+    public void SpawnGlow(Vector3 position, Quaternion rotation, TileGlowProperties glowProps, Interface spawnInterface)
+    {
+        Instantiate(_tileGlowEffect, position, rotation, _effectsParent).GetComponent<TileGlowEffect>().DoGlowAnimation(spawnInterface.Side, glowProps.BaseColor, glowProps.FadeColor);
     }
 }

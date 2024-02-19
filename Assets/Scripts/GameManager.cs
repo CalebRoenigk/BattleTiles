@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,12 +12,17 @@ public class GameManager : MonoBehaviour
     
     [Header("Game Setup Variables")]
     public int PlayerCount = 4;
-    [SerializeField] private int _startingHealth = 100;
+    public int StartingHealth = 100;
     [SerializeField] private int _startingHandSize = 5;
+
+    [Header("Scoring and Health")]
+    public int HealthCardValue = 5;
+    public int DamageCardValue = 8;
 
     [Header("State")]
     public int PlayerTurn = -1;
     public int TurnCount = -1;
+    [SerializeField] private bool _playerPlaced = false;
     
     [Header("Players")]
     public Dictionary<int, Player> Players = new Dictionary<int, Player>();
@@ -24,9 +31,14 @@ public class GameManager : MonoBehaviour
     
     [Header("Boneyard")]
     public Boneyard Boneyard;
-    
+    [SerializeField] private int _maxTilesToDraw = 100;
+
     [Header("Board")]
     public Board Board;
+    [SerializeField] private TileGlowColors _tileGlowColors;
+
+    [Header("UI")]
+    [SerializeField] private DamageUIHandler _damageUIHandler;
 
     private void Awake() 
     { 
@@ -56,7 +68,8 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            SceneManager.LoadScene("Scenes/SampleScene");
+            Scene scene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(scene.name);
         }
     }
 
@@ -78,11 +91,12 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < playerCount; i++) 
         {
-            Player player = new Player(i, _startingHealth);
+            Player player = new Player(i, StartingHealth);
             PlayerHandVisual playerHandVisual = Instantiate(_playerHandPrefab, Vector3.zero, Quaternion.identity, _playerHandsParent).GetComponent<PlayerHandVisual>();
             playerHandVisual.SetHand(player.Hand);
             HandViewManager.Instance.AddHand(playerHandVisual);
             Players.Add(i, player);
+            UIManager.Instance.AddPlayer(player);
         }
     }
 
@@ -152,6 +166,7 @@ public class GameManager : MonoBehaviour
         Tile highestTile = GetHighestTileFromHands();
 
         Board.PlaceTile(highestTile, true);
+        Board.UpdateCache();
         return highestTile.Owner.Index;
     }
     
@@ -186,35 +201,89 @@ public class GameManager : MonoBehaviour
     // Checks to do before the turn starts, things like checks for hands that cannot place a tile, etc.
     private void PreTurnChecks()
     {
-        // Debug.Log("Preturn Checks!");
-        // TODO: FIX THIS
-        // if (!Players[PlayerTurn].PlayerHand.CheckMatchingDominos())
-        // {
-        //     // There are no matches in this hand, draw one domino then next turn
-        //     Camera mainCamera = Camera.main;
-        //     Vector3 offscreenBoneyardPosition = mainCamera.ScreenToWorldPoint(new Vector3(-mainCamera.pixelWidth/4f, mainCamera.pixelHeight/2f, 10f));
-        //     offscreenBoneyardPosition.y = 0f;
-        //     Domino domino = Instantiate(_dominoPrefab, offscreenBoneyardPosition, Quaternion.identity, Players[PlayerTurn].PlayerHand.transform).GetComponent<Domino>();
-        //     domino.gameObject.name = domino.Values.ToString();
-        //     ValuePair pair = Boneyard.DrawDomino();
-        //     domino.SetDomino(pair);
-        //     Players[PlayerTurn].AddToHand(domino);
-        //     Invoke("NextPlayer", 2f);
-        // }
+        // Update the Temp UI
+        TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
+
+        // Reset the player placed bool
+        _playerPlaced = false;
         
-        // At the end of preturn checks, trigger the start of the turn
-        Players[PlayerTurn].StartTurn();
+        // Test if the player can play
+        if (PlayerCanPlay())
+        {
+            // Check if the player can make a move
+            int drawnTiles = DrawTileTest(0); // TODO: Add delay to this and show the player having to draw each tile
+            Debug.Log("Player " + PlayerTurn + " drew " + drawnTiles + " tiles.");
+
+            // At the end of preturn checks, trigger the start of the turn
+            Players[PlayerTurn].StartTurn();
+        }
+        else
+        {
+            // Skip the player and go to the next
+            PostTurnChecks();
+        }
     }
 
     private void PostTurnChecks()
     {
         // TODO: Do any post turn checks
+        // Update the board cache
         Board.UpdateSelection(null);
         Board.UpdateCache();
+        
+        // Only do a damage calculation if the player placed a tile
+        if (_playerPlaced)
+        {
+            // Collect all open interfaces to tally up the score
+            Dictionary<int, List<Interface>> groupedOpenInterfaces = Board.GetGroupedOpenInterfaces();
+        
+            // Filter the dictonary so that only interfaces with 3 or more of a value remain
+            groupedOpenInterfaces = groupedOpenInterfaces.Where(kvp => kvp.Value.Count >= 3).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        
+            // Debug.Log("Interfaces with more than 3: ");
+            // foreach (var VARIABLE in groupedOpenInterfaces)
+            // {
+            //     
+            // }
+            
+            // For each remaining group tally up the total damage for that group
+            List<DamageTally> damageTallies = new List<DamageTally>();
+            foreach (var groupedInterfaces in groupedOpenInterfaces)
+            {
+                int interfaceValue = groupedInterfaces.Key;
+                int sourcePlayer = PlayerTurn;
+                List<Interface> sources = groupedInterfaces.Value;
+                int damage;
+                List<int> effected = new List<int>();
+
+                if (interfaceValue == 5)
+                {
+                    // Heal the player
+                    effected.Add(PlayerTurn);
+                    damage = sources.Count * -HealthCardValue;
+                }
+                else
+                {
+                    // Do damage to all other players
+                    effected.AddRange(GetAllPlayerIndices(true));
+                    damage = sources.Count * DamageCardValue;
+                }
+            
+                damageTallies.Add(new DamageTally(damage, sourcePlayer, effected, sources));
+            }
+        
+            // Apply that damage to all effected players (outlined by the damage values class)
+            ApplyDamages(damageTallies);
+        }
+        
+        // TODO: Check if any players have died and announce this
+
+        // Update the player UI
+        TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
 
         // End the turn of the current player
         Players[PlayerTurn].EndTurn();
-        
+
         // Start the next turn
         NextPlayer();
     }
@@ -231,6 +300,7 @@ public class GameManager : MonoBehaviour
         if (Board.PrimaryMatch != null)
         {
             Board.PlaceTile(tile);
+            _playerPlaced = true;
         }
         
         // TODO: Maybe add some kinda error state to show the player they cant place that tile
@@ -251,5 +321,73 @@ public class GameManager : MonoBehaviour
         playerTurns.Add(NextPlayerIndex());
 
         return playerTurns;
+    }
+
+    private List<int> GetAllPlayerIndices(bool excludeCurrentPlayer = false)
+    {
+        List<int> playerIndices = new List<int>();
+        foreach (var playerDictEntry in Players)
+        {
+            if (!(excludeCurrentPlayer && playerDictEntry.Key == PlayerTurn))
+            {
+                playerIndices.Add(playerDictEntry.Key);
+            }
+        }
+
+        return playerIndices;
+    }
+
+    private void ApplyDamages(List<DamageTally> damageTallies)
+    {
+        foreach (DamageTally damageTally in damageTallies)
+        {
+            foreach (int effectedPlayerIndex in damageTally.PlayersEffected)
+            {
+                Players[effectedPlayerIndex].DoDamage(damageTally.Damage);
+            }
+            
+            // Visually display the damage tiles
+            foreach (Interface source in damageTally.InterfaceSources)
+            {
+                BoardVisual.Instance.SpawnGlow(source.Parent.TileVisual.transform.position, Quaternion.LookRotation((source.GetPlacementPosition() - source.Parent.TileVisual.transform.position).normalized, Vector3.up), _tileGlowColors.GetGlowColors(damageTally.SourceValue), source);
+            }
+        }
+
+        _damageUIHandler.DisplayDamageTally(DamageTally.CondenseIntoSingle(damageTallies));
+        UIManager.Instance.UpdatePlayerHealth();
+    }
+
+    // Checks if the current player's hand has any playable tiles
+    private bool CheckPlayerPlacementOptions()
+    {
+        List<int> openBoardValues = Board.OpenValues;
+        List<int> handValues = Players[PlayerTurn].Hand.GetHandValues();
+
+        return ListUtility.AnyCommonValue(openBoardValues, handValues);
+    }
+
+    // Tests if the current player can play a tile, if not we draw a tile and repeat the function
+    private int DrawTileTest(int iteration)
+    {
+        if (iteration > _maxTilesToDraw)
+        {
+            return iteration;
+        }
+        
+        if (!CheckPlayerPlacementOptions())
+        {
+            Players[PlayerTurn].Hand.DrawTile();
+
+            DrawTileTest(iteration+1);
+        }
+
+        return iteration;
+    }
+    
+    // Returns true if the player is allowed to have a turn
+    private bool PlayerCanPlay()
+    {
+        // Does the player have more than 0 health
+        return Players[PlayerTurn].Health > 0;
     }
 }

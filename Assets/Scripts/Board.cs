@@ -68,6 +68,15 @@ public class Board
             // Update the Open Interfaces Cache
             OpenTiles.Clear();
             OpenInterfaces.Clear();
+            if (Root.HasOpenInterfaces())
+            {
+                OpenTiles.Add(Root);
+                foreach (Interface rootOpenInterface in Root.GetOpenInterfaces())
+                {
+                    OpenInterfaces.Add(rootOpenInterface);
+                }
+            }
+
             foreach (Tile tile in Root.GetConnectedTiles())
             {
                 List<Interface> openInterfaces = tile.GetOpenInterfaces();
@@ -76,9 +85,8 @@ public class Board
                     OpenTiles.Add(tile);
                     OpenInterfaces.AddRange(openInterfaces);
                 }
-            
             }
-        
+
             // Update the Open Values Cache
             OpenValues.Clear();
             foreach (Interface openInterface in OpenInterfaces)
@@ -193,5 +201,23 @@ public class Board
                 BoardVisual.ClearGhosts();
             }
         }
+    }
+    
+    // Returns the grouped collections of open interfaces
+    public Dictionary<int, List<Interface>> GetGroupedOpenInterfaces()
+    {
+        Dictionary<int, List<Interface>> groupedOpenInterfaces = new Dictionary<int, List<Interface>>();
+
+        foreach (Interface openInterface in OpenInterfaces)
+        {
+            if (!groupedOpenInterfaces.ContainsKey(openInterface.Value))
+            {
+                groupedOpenInterfaces.Add(openInterface.Value, new List<Interface>());
+            }
+
+            groupedOpenInterfaces[openInterface.Value].Add(openInterface);
+        }
+
+        return groupedOpenInterfaces;
     }
 }

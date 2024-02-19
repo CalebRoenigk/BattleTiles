@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Hand
@@ -79,5 +80,17 @@ public class Hand
         {
             tile.TileVisual.SetVisibility(0f, true);
         }
+    }
+
+    // Returns a list of values that are in the hand
+    public List<int> GetHandValues()
+    {
+        List<int> values = new List<int>();
+        foreach (Tile tile in Tiles)
+        {
+            values.AddRange(tile.GetValues());
+        }
+
+        return values.Distinct().ToList();
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class ListUtility
@@ -17,5 +18,15 @@ public static class ListUtility
             list[k] = list[n];
             list[n] = value;
         }
+    }
+    
+    public static bool AnyCommonValue(List<int> listA, List<int> listB)
+    {
+        return listA.Any(v => listB.Contains(v));
+    }
+    
+    public static string ConvertListToString<T>(List<T> list)
+    {
+        return string.Join(", ", list);
     }
 }
