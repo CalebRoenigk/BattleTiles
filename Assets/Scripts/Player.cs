@@ -42,5 +42,6 @@ public class Player
     public void DoDamage(int damage)
     {
         Health -= damage;
+        Health = Mathf.RoundToInt(Mathf.Max(Health, 0)); // Clamp the health to not fall below zero
     }
 }

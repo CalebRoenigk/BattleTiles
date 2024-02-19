@@ -16,8 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _startingHandSize = 5;
 
     [Header("Scoring and Health")]
-    [SerializeField] private int _healthCardValue = 5;
-    [SerializeField] private int _damageCardValue = 8;
+    public int HealthCardValue = 5;
+    public int DamageCardValue = 8;
 
     [Header("State")]
     public int PlayerTurn = -1;
@@ -36,6 +36,9 @@ public class GameManager : MonoBehaviour
     [Header("Board")]
     public Board Board;
     [SerializeField] private TileGlowColors _tileGlowColors;
+
+    [Header("UI")]
+    [SerializeField] private DamageUIHandler _damageUIHandler;
 
     private void Awake() 
     { 
@@ -256,13 +259,13 @@ public class GameManager : MonoBehaviour
                 {
                     // Heal the player
                     effected.Add(PlayerTurn);
-                    damage = sources.Count * -_healthCardValue;
+                    damage = sources.Count * -HealthCardValue;
                 }
                 else
                 {
                     // Do damage to all other players
                     effected.AddRange(GetAllPlayerIndices(true));
-                    damage = sources.Count * _damageCardValue;
+                    damage = sources.Count * DamageCardValue;
                 }
             
                 damageTallies.Add(new DamageTally(damage, sourcePlayer, effected, sources));
@@ -348,6 +351,8 @@ public class GameManager : MonoBehaviour
                 BoardVisual.Instance.SpawnGlow(source.Parent.TileVisual.transform.position, Quaternion.LookRotation((source.GetPlacementPosition() - source.Parent.TileVisual.transform.position).normalized, Vector3.up), _tileGlowColors.GetGlowColors(damageTally.SourceValue), source);
             }
         }
+
+        _damageUIHandler.DisplayDamageTally(DamageTally.CondenseIntoSingle(damageTallies));
     }
 
     // Checks if the current player's hand has any playable tiles
