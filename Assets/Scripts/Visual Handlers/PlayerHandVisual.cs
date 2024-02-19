@@ -79,7 +79,7 @@ public class PlayerHandVisual : MonoBehaviour
             
             handPositions.Add(point);
         }
-        
+
         return handPositions;
     }
 
@@ -94,7 +94,8 @@ public class PlayerHandVisual : MonoBehaviour
             Vector3 localPos = visualTile.transform.localPosition;
             localPos.z = handPositions[i].z;
             visualTile.transform.localPosition = localPos;
-            visualTile.transform.DOLocalMoveX(handPositions[i].x, 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
+            visualTile.transform.DOKill();
+            visualTile.transform.DOLocalMoveX( handPositions[i].x, 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
             visualTile.transform.DOLocalRotate(new Vector3(90f, 0f, 0f), 0.25f).SetEase(Ease.OutCubic).SetDelay(delay);
         }
     }
