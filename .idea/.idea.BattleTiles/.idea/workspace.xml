@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="140d1408-76c5-4ad4-8ca1-9b99bdd80716" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CameraManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CameraManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TileVisual.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TileVisual.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Tile Ghost.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Tile Ghost.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/BoardVisual.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/BoardVisual.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

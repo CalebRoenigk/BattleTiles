@@ -93,9 +93,10 @@ public class BoardVisual : MonoBehaviour
             tileGhostVisual.SetTile(tile, Board.PrimaryMatch == matchedInterface);
             
             // Align the ghosts properly
-            Quaternion alignedRotation = Quaternion.LookRotation(matchedInterface.GetPosition() - placementPosition, Vector3.up);
-            tileGhostVisual.transform.rotation = alignedRotation;
-            tileGhostVisual.transform.Rotate(new Vector3(0f, 90f, 0f), Space.Self);
+            placementPosition = matchedInterface.GetPlacementPosition();
+            Interface placedInterface = tile.GetMatchingInterfaces(matchedInterface)[0];
+            Quaternion placementRotation = placedInterface.GetOrientationTowards(placementPosition, matchedInterface);
+            tileGhostVisual.transform.rotation = placementRotation;
 
             // Add the ghost visual to the visuals list
             _ghostVisuals.Add(tileGhostVisual);
