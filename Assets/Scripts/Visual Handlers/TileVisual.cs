@@ -21,6 +21,8 @@ public class TileVisual : MonoBehaviour
     [Header("Runtime")]
     [SerializeField] private bool _drawGizmos = false;
     [SerializeField] private bool _isDragging = false;
+    [SerializeField] private bool _isOnGhost = false;
+    [SerializeField] private Transform _hoveredGhost;
 
     private void Awake()
     {
@@ -161,4 +163,6 @@ public class TileVisual : MonoBehaviour
         placementSequence.Insert(0f, transform.DOScale(1f, _placementDuration).SetEase(Ease.InOutQuad));
         placementSequence.AppendCallback(GameManager.Instance.EndTurn);
     }
+    
+    private bool 
 }
