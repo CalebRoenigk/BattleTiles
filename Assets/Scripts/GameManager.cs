@@ -62,6 +62,12 @@ public class GameManager : MonoBehaviour
         {
             EndTurn();
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Scene scene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(scene.name);
+        }
     }
 
     private void Setup()
@@ -193,16 +199,25 @@ public class GameManager : MonoBehaviour
     {
         // Update the Temp UI
         TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
-        
+
         // Reset the player placed bool
         _playerPlaced = false;
         
-        // Check if the player can make a move
-        int drawnTiles = DrawTileTest(0);
-        Debug.Log("Player " + PlayerTurn + " drew " + drawnTiles + " tiles.");
+        // Test if the player can play
+        if (PlayerCanPlay())
+        {
+            // Check if the player can make a move
+            int drawnTiles = DrawTileTest(0); // TODO: Add delay to this and show the player having to draw each tile
+            Debug.Log("Player " + PlayerTurn + " drew " + drawnTiles + " tiles.");
 
-        // At the end of preturn checks, trigger the start of the turn
-        Players[PlayerTurn].StartTurn();
+            // At the end of preturn checks, trigger the start of the turn
+            Players[PlayerTurn].StartTurn();
+        }
+        else
+        {
+            // Skip the player and go to the next
+            PostTurnChecks();
+        }
     }
 
     private void PostTurnChecks()
@@ -256,6 +271,8 @@ public class GameManager : MonoBehaviour
             // Apply that damage to all effected players (outlined by the damage values class)
             ApplyDamages(damageTallies);
         }
+        
+        // TODO: Check if any players have died and announce this
 
         // Update the player UI
         TemporaryUI.Instance.SetPlayerStats("Player " + PlayerTurn, Players[PlayerTurn].Health, Players[PlayerTurn].Score);
@@ -358,5 +375,12 @@ public class GameManager : MonoBehaviour
         }
 
         return iteration;
+    }
+    
+    // Returns true if the player is allowed to have a turn
+    private bool PlayerCanPlay()
+    {
+        // Does the player have more than 0 health
+        return Players[PlayerTurn].Health > 0;
     }
 }
