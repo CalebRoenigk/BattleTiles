@@ -31,7 +31,8 @@ public class GameManager : MonoBehaviour
     
     [Header("Boneyard")]
     public Boneyard Boneyard;
-    
+    [SerializeField] private int _maxTilesToDraw = 100;
+
     [Header("Board")]
     public Board Board;
     [SerializeField] private TileGlowColors _tileGlowColors;
@@ -60,11 +61,6 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             EndTurn();
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene("Scenes/SampleScene");
         }
     }
 
@@ -160,6 +156,7 @@ public class GameManager : MonoBehaviour
         Tile highestTile = GetHighestTileFromHands();
 
         Board.PlaceTile(highestTile, true);
+        Board.UpdateCache();
         return highestTile.Owner.Index;
     }
     
@@ -200,22 +197,10 @@ public class GameManager : MonoBehaviour
         // Reset the player placed bool
         _playerPlaced = false;
         
-        // Debug.Log("Preturn Checks!");
-        // TODO: FIX THIS
-        // if (!Players[PlayerTurn].PlayerHand.CheckMatchingDominos())
-        // {
-        //     // There are no matches in this hand, draw one domino then next turn
-        //     Camera mainCamera = Camera.main;
-        //     Vector3 offscreenBoneyardPosition = mainCamera.ScreenToWorldPoint(new Vector3(-mainCamera.pixelWidth/4f, mainCamera.pixelHeight/2f, 10f));
-        //     offscreenBoneyardPosition.y = 0f;
-        //     Domino domino = Instantiate(_dominoPrefab, offscreenBoneyardPosition, Quaternion.identity, Players[PlayerTurn].PlayerHand.transform).GetComponent<Domino>();
-        //     domino.gameObject.name = domino.Values.ToString();
-        //     ValuePair pair = Boneyard.DrawDomino();
-        //     domino.SetDomino(pair);
-        //     Players[PlayerTurn].AddToHand(domino);
-        //     Invoke("NextPlayer", 2f);
-        // }
-        
+        // Check if the player can make a move
+        int drawnTiles = DrawTileTest(0);
+        Debug.Log("Player " + PlayerTurn + " drew " + drawnTiles + " tiles.");
+
         // At the end of preturn checks, trigger the start of the turn
         Players[PlayerTurn].StartTurn();
     }
@@ -346,5 +331,32 @@ public class GameManager : MonoBehaviour
                 BoardVisual.Instance.SpawnGlow(source.Parent.TileVisual.transform.position, Quaternion.LookRotation((source.GetPlacementPosition() - source.Parent.TileVisual.transform.position).normalized, Vector3.up), _tileGlowColors.GetGlowColors(damageTally.SourceValue), source);
             }
         }
+    }
+
+    // Checks if the current player's hand has any playable tiles
+    private bool CheckPlayerPlacementOptions()
+    {
+        List<int> openBoardValues = Board.OpenValues;
+        List<int> handValues = Players[PlayerTurn].Hand.GetHandValues();
+
+        return ListUtility.AnyCommonValue(openBoardValues, handValues);
+    }
+
+    // Tests if the current player can play a tile, if not we draw a tile and repeat the function
+    private int DrawTileTest(int iteration)
+    {
+        if (iteration > _maxTilesToDraw)
+        {
+            return iteration;
+        }
+        
+        if (!CheckPlayerPlacementOptions())
+        {
+            Players[PlayerTurn].Hand.DrawTile();
+
+            DrawTileTest(iteration+1);
+        }
+
+        return iteration;
     }
 }

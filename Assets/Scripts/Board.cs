@@ -68,6 +68,15 @@ public class Board
             // Update the Open Interfaces Cache
             OpenTiles.Clear();
             OpenInterfaces.Clear();
+            if (Root.HasOpenInterfaces())
+            {
+                OpenTiles.Add(Root);
+                foreach (Interface rootOpenInterface in Root.GetOpenInterfaces())
+                {
+                    OpenInterfaces.Add(rootOpenInterface);
+                }
+            }
+
             foreach (Tile tile in Root.GetConnectedTiles())
             {
                 List<Interface> openInterfaces = tile.GetOpenInterfaces();
@@ -76,9 +85,8 @@ public class Board
                     OpenTiles.Add(tile);
                     OpenInterfaces.AddRange(openInterfaces);
                 }
-            
             }
-        
+
             // Update the Open Values Cache
             OpenValues.Clear();
             foreach (Interface openInterface in OpenInterfaces)
