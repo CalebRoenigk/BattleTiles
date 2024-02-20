@@ -162,6 +162,8 @@ public class CameraManager : MonoBehaviour
     private void RotateCamera()
     {
         bool rotationPressed = false;
+        _rotationSpeedMax = GetRotationSpeedMax();
+        
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             _rotateBoard += _rotationSpeedRamp * Time.deltaTime;
@@ -203,5 +205,10 @@ public class CameraManager : MonoBehaviour
         float nz = (cos * (point.z - 0f)) - (sin * (point.x - 0f)) + 0f;
 
         return new Vector3(nx, point.y, nz);
+    }
+
+    private float GetRotationSpeedMax()
+    {
+        return 46.98f * MainCamera.fieldOfView - 19.71f;
     }
 }
