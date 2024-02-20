@@ -209,6 +209,6 @@ public class CameraManager : MonoBehaviour
 
     private float GetRotationSpeedMax()
     {
-        return 46.98f * MainCamera.fieldOfView - 19.71f;
+        return 0.02f * MainCamera.fieldOfView + 0.42f;
     }
 }
