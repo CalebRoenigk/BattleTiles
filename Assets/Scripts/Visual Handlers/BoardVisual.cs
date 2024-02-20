@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Unity.Mathematics;
 using Unity.VisualScripting;
@@ -12,19 +13,15 @@ public class BoardVisual : MonoBehaviour
 
     public Board Board;
 
-    [SerializeField] private Transform _boardParent;
+    [SerializeField] private Transform _camParent;
     [SerializeField] private Transform _placedParent;
     [SerializeField] private Transform _ghostParent;
     [SerializeField] private Transform _effectsParent;
     [SerializeField] private GameObject _ghostPrefab;
     [SerializeField] private GameObject _tileGlowEffect;
     [SerializeField] private List<TileGhostVisual> _ghostVisuals = new List<TileGhostVisual>();
-    [SerializeField] private float _rotateBoard = 0f;
-    [SerializeField] private float _rotationSpeedRamp = 0.05f;
-    [SerializeField] private float _rotationSpeedMax = 10f;
-    [SerializeField] private float _rotationSpeedSlow = 0.075f;
-    
-    
+
+
     private void Awake() 
     { 
         // If there is an instance, and it's not me, delete myself.
@@ -37,36 +34,6 @@ public class BoardVisual : MonoBehaviour
         { 
             Instance = this; 
         } 
-    }
-    
-    private void Update()
-    {
-        bool rotationPressed = false;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-        {
-            _rotateBoard += _rotationSpeedRamp * Time.deltaTime;
-            rotationPressed = true;
-        }
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-        {
-            _rotateBoard -= _rotationSpeedRamp * Time.deltaTime;
-            rotationPressed = true;
-        }
-        
-        _rotateBoard = Mathf.Clamp(_rotateBoard, -_rotationSpeedMax, _rotationSpeedMax);
-        
-        if (!rotationPressed)
-        {
-            _rotateBoard = Mathf.Lerp(_rotateBoard, 0f, _rotationSpeedSlow);
-            if (Mathf.Abs(_rotateBoard) <= 0.01f)
-            {
-                _rotateBoard = 0f;
-            }
-        }
-        
-        Vector3 euler = _boardParent.localRotation.eulerAngles;
-        euler.y += _rotateBoard;
-        _boardParent.localRotation = Quaternion.Euler(euler);
     }
 
     public void ClearGhosts(bool forceInstantClear = false)
@@ -85,12 +52,14 @@ public class BoardVisual : MonoBehaviour
 
     public void DrawGhosts(Tile tile, List<Interface> matchedInterfaces)
     {
+        matchedInterfaces = matchedInterfaces.Distinct().ToList();
+        
         // Spawn ghosts at their matched interfaces
         foreach (Interface matchedInterface in matchedInterfaces)
         {
             Vector3 placementPosition = matchedInterface.GetPlacementPosition();
             TileGhostVisual tileGhostVisual = Instantiate(_ghostPrefab, placementPosition, Quaternion.identity, _ghostParent).GetComponent<TileGhostVisual>();
-            tileGhostVisual.SetTile(tile, Board.PrimaryMatch == matchedInterface);
+            tileGhostVisual.SetTile(tile, matchedInterface);
             
             // Align the ghosts properly
             placementPosition = matchedInterface.GetPlacementPosition();

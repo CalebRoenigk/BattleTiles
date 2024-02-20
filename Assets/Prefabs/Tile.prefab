@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7234902066710601488}
   - component: {fileID: 2487613900860023173}
   - component: {fileID: 4102431785455343484}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,8 +98,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Selected: 0
+  _placementDuration: 0.4
+  _ghostLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
   _material: {fileID: 0}
   _collider: {fileID: 4102431785455343484}
+  _drawGizmos: 0
+  _isDragging: 0
+  _isOnGhost: 0
+  _hoveredGhost: {fileID: 0}
 --- !u!65 &4102431785455343484
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -119,5 +127,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 0.18750007, z: 1.5}
+  m_Size: {x: 1, y: 0.2, z: 1.5}
   m_Center: {x: 0, y: 0, z: 0.25}

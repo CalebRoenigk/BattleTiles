@@ -11,9 +11,22 @@ public class CameraManager : MonoBehaviour
 
     [Header("Camera")]
     public Camera MainCamera;
+
+    [Header("Mouse")]
+    public Vector3 MouseWorldPosition;
+    
+    [Header("Cam Rotate")]
+    [SerializeField] private float _rotateBoard = 0f;
+    [SerializeField] private float _rotationSpeedRamp = 0.05f;
+    [SerializeField] private float _rotationSpeedMax = 10f;
+    [SerializeField] private float _rotationSpeedSlow = 0.075f;
+    [SerializeField] private Vector3 _cameraRotationPosition = new Vector3(0f, 15f, -20f);
+    [SerializeField] private float _yRotation = 0f;
     
     [Header("Cinemachine")]
     [SerializeField] private CinemachineTargetGroup _boardTargetGroup;
+    [SerializeField] private CinemachineVirtualCamera _boardCamera;
+    [SerializeField] private CinemachineTransposer _boardCameraTransposer;
     
     [Header("Hand Settings")]
     [SerializeField] private float _distFromCamera = 4f;
@@ -45,6 +58,13 @@ public class CameraManager : MonoBehaviour
     {
         MainCamera = Camera.main;
         CalculateHandSettings();
+        _boardCameraTransposer = _boardCamera.GetCinemachineComponent<CinemachineTransposer>();
+    }
+
+    private void Update()
+    {
+        MouseWorldPosition = GetMouseWorldPosition();
+        RotateCamera();
     }
 
     private void OnDrawGizmos()
@@ -129,5 +149,59 @@ public class CameraManager : MonoBehaviour
         position.x = 0f;
         
         rotation = Quaternion.LookRotation(MainCamera.transform.forward, MainCamera.transform.up);
+    }
+    
+    // Returns the mouse world position
+    private Vector3 GetMouseWorldPosition()
+    {
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = 4f;
+        return MainCamera.ScreenToWorldPoint(mousePos);
+    }
+
+    private void RotateCamera()
+    {
+        bool rotationPressed = false;
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        {
+            _rotateBoard += _rotationSpeedRamp * Time.deltaTime;
+            rotationPressed = true;
+        }
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        {
+            _rotateBoard -= _rotationSpeedRamp * Time.deltaTime;
+            rotationPressed = true;
+        }
+        
+        _rotateBoard = Mathf.Clamp(_rotateBoard, -_rotationSpeedMax, _rotationSpeedMax);
+        
+        if (!rotationPressed)
+        {
+            _rotateBoard = Mathf.Lerp(_rotateBoard, 0f, _rotationSpeedSlow);
+            if (Mathf.Abs(_rotateBoard) <= 0.01f)
+            {
+                _rotateBoard = 0f;
+            }
+        }
+
+        _yRotation += _rotateBoard;
+        _yRotation += 360;
+        _yRotation %= 360;
+
+        Vector3 newOffset = RotatePointAroundY(_cameraRotationPosition, _yRotation);
+
+        _boardCameraTransposer.m_FollowOffset = newOffset;
+    }
+
+    private Vector3 RotatePointAroundY(Vector3 point, float angle)
+    {
+        float rads = Mathf.Deg2Rad * angle;
+        float cos = Mathf.Cos(rads);
+        float sin = Mathf.Sin(rads);
+
+        float nx = (cos * (point.x - 0f)) + (sin * (point.z - 0f)) + 0f;
+        float nz = (cos * (point.z - 0f)) - (sin * (point.x - 0f)) + 0f;
+
+        return new Vector3(nx, point.y, nz);
     }
 }

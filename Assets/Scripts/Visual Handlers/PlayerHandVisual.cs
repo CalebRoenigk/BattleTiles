@@ -112,6 +112,7 @@ public class PlayerHandVisual : MonoBehaviour
         foreach (var tileVisual in _tileVisuals)
         {
             tileVisual.transform.DOLocalMoveY(0f, 0.175f).SetEase(Ease.OutQuad).SetDelay(0.25f + (staggerDelay * i));
+            tileVisual.SetEnabled(true);
             i++;
         }
         Sequence animateOnSequence = DOTween.Sequence();
@@ -126,6 +127,7 @@ public class PlayerHandVisual : MonoBehaviour
         foreach (var tileVisual in _tileVisuals)
         {
             tileVisual.transform.DOLocalMoveY(-2f, 0.175f).SetEase(Ease.InQuad);
+            tileVisual.SetEnabled(false);
         }
         Sequence animateOffSequence = DOTween.Sequence();
         animateOffSequence.InsertCallback(0.175f, () => SetViewingState(false));
@@ -174,5 +176,21 @@ public class PlayerHandVisual : MonoBehaviour
         }
 
         GameManager.Instance.UpdateSelection(null);
+    }
+    
+    // A tile has changed its drag state, disable the rest of the tile collisions or enable them if the state is now null
+    public void SetTileDragging(TileVisual tileVisual)
+    {
+        foreach (TileVisual handTileVisual in _tileVisuals)
+        {
+            if (tileVisual == null)
+            {
+                handTileVisual.SetEnabled(true);
+            }
+            else
+            {
+                handTileVisual.SetEnabled(tileVisual == handTileVisual);
+            }
+        }
     }
 }

@@ -5,8 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="140d1408-76c5-4ad4-8ca1-9b99bdd80716" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.BattleTiles/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Materials/Tile Ghost.shadergraph" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Materials/Tile Ghost.shadergraph" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Tile Ghost.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Tile Ghost.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Tile.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Tile.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Board.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Board.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/CameraManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/CameraManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/BoardVisual.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/BoardVisual.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/PlayerHandVisual.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/PlayerHandVisual.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TileGhostVisual.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TileGhostVisual.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TileVisual.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Visual Handlers/TileVisual.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,6 +113,7 @@
       <option name="presentableId" value="Default" />
       <updated>1708102801688</updated>
       <workItem from="1708102804235" duration="72607000" />
+      <workItem from="1708392192756" duration="4743000" />
     </task>
     <servers />
   </component>

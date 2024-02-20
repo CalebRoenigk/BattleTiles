@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 4036802309922256399}
   - component: {fileID: 7247921468842737294}
   - component: {fileID: 6113530782972414946}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Tile Ghost
-  m_TagString: Untagged
+  m_TagString: Ghost
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,7 +100,11 @@ MonoBehaviour:
   _material: {fileID: 0}
   _ghostSelectedColor:
     serializedVersion: 2
-    rgba: 4294946089
+    rgba: 4294967295
+  _ghostNotSelectedColor:
+    serializedVersion: 2
+    rgba: 16777215
+  _setState: 0
 --- !u!65 &6113530782972414946
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -120,5 +124,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 0.01, z: 1}
+  m_Size: {x: 1, y: 0.05, z: 1}
   m_Center: {x: 0, y: -0.09373282, z: 0}

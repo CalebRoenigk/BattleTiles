@@ -14,7 +14,7 @@ public class Board
     public List<int> OpenValues = new List<int>(); // Cache
     public Interface PrimaryMatch;
     public List<Interface> ActiveMatches = new List<Interface>();
-    public int BoardTileMask = 7;
+    public int TileMask = 7;
 
     private bool _contentsChanged = false;
 
@@ -139,7 +139,7 @@ public class Board
     {
         // Find all tiles within a radius of the placed tile
         float checkRadius = 1.25f;
-        Collider[] hitColliders = Physics.OverlapSphere(placementLocation, checkRadius, BoardTileMask);
+        Collider[] hitColliders = Physics.OverlapSphere(placementLocation, checkRadius, TileMask);
         List<Interface> openInterfacesInRange = new List<Interface>();
         foreach (var hitCollider in hitColliders)
         {
@@ -188,8 +188,6 @@ public class Board
 
             if (ActiveMatches.Count > 0)
             {
-                PrimaryMatch = ActiveMatches[0];
-                
                 // Clear Ghosts First
                 BoardVisual.ClearGhosts(true);
                 
@@ -219,5 +217,10 @@ public class Board
         }
 
         return groupedOpenInterfaces;
+    }
+
+    public void SetPrimaryMatch(Interface primaryMatch)
+    {
+        PrimaryMatch = primaryMatch;
     }
 }
